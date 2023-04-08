@@ -15,11 +15,13 @@ namespace POCSAG_ESP_Config_Tool
 {
     public partial class MainForm : Form
     {
+        private string appVersion = "";
+
         public MainForm()
         {
             InitializeComponent();
             string appName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-            string appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             appVersion = appVersion.Substring(0, appVersion.LastIndexOf('.'));
             Text = appName + " v" + appVersion + " by LY3PH";
         }
@@ -156,6 +158,8 @@ namespace POCSAG_ESP_Config_Tool
         }
 
         SerialPort _serialPort;
+        
+        private bool compatibleVersions = false;
 
         void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -173,8 +177,11 @@ namespace POCSAG_ESP_Config_Tool
                     if (data.StartsWith("POCSAG-ESP"))
                     {
                         string version = data.Substring(12, data.IndexOf(" by") - 12);
+
+                        compatibleVersions = (appVersion == version);
+
                         //lVersion.Text = version;
-                        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lVersion, "l", version });
+                        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lVersion, "l", compatibleVersions ? version : "INCOMPATIBLE VERSION " + version });
 
                         data = _serialPort.ReadLine();
                         string build = data;
@@ -229,7 +236,11 @@ namespace POCSAG_ESP_Config_Tool
 
         private void bSend_Click(object sender, EventArgs e)
         {
-            //
+            if (!compatibleVersions)
+            {
+                MessageBox.Show("Wrong FW and Config Tool versions!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
     }
 }
