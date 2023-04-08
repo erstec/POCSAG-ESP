@@ -13,11 +13,18 @@ https://github.com/erstec/POCSAG-ESP
 #include "messages.h"
 #include "rtc.h"
 #include "screen.h"
+#include "settings.h"
 
 String year, month, day, hour, minute, second;
 String _time, _date;
 
-void messageParse(String str, uint32_t addr) {
+static uint16_t _allMessages = 0;
+static uint16_t _newMessages = 0;
+
+//static message_ts _messages[MESSAGES_MAX_COUNT];
+static message_ts _lastMessage;
+
+bool messageParse(String str, uint32_t addr) {
     if (addr == 216) { // 0000216 - Time announcement in UTC
         if (str.startsWith("YYYYMMDDHHMMSS")) {
             // parse the message
@@ -64,7 +71,51 @@ void messageParse(String str, uint32_t addr) {
             rtcSetTimeDate(second.toInt(), minute.toInt(), hour.toInt(), day.toInt(), month.toInt(), year.toInt() + 2000);
         }
     } else {
-        Serial.println("Unknown address");
-        displayMessage(str, addr);
+        Serial.println("Unknown address: " + String(addr));
+
+#ifdef RX_ONLY_ADDRESSED
+        if (addr == SX1278_ADDR) {
+            _allMessages++;
+            _newMessages++;
+
+            _lastMessage.message = str;
+            _lastMessage.address = addr;
+            _lastMessage.timestamp = rtcGetTimeUnix();
+            _lastMessage.newMessage = true;
+
+            displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
+        }
+#else
+        _allMessages++;
+        _newMessages++;
+
+        _lastMessage.message = str;
+        _lastMessage.address = addr;
+        _lastMessage.timestamp = rtcGetTimeUnix();
+        _lastMessage.newMessage = true;
+
+        displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
+#endif
+
+        return true;
     }
+
+    return false;
+}
+
+void messageLastDisplay() {
+    if (_allMessages > 0) {
+        displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
+        _newMessages = 0;
+    } else {
+        displayMessage("No messages", 0, 0, false);
+    }
+}
+
+uint16_t messageGetAllCount() {
+    return _allMessages;
+}
+
+uint16_t messageGetNewCount() {
+    return _newMessages;
 }

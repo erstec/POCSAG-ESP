@@ -36,6 +36,8 @@ PagerClient pager(&radio);
 elapsedMillis everySecond;
 elapsedMillis every5Seconds;
 
+elapsedMillis mainScreenTMO;
+
 void blinkError() {
     while (true) {
         digitalWrite(LED_BUILTIN, HIGH);
@@ -51,6 +53,9 @@ void setup() {
     // initialize built-in LED
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
+
+    // initialize built-in button
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
 
     // initialize serial port
     Serial.begin(115200);
@@ -112,7 +117,20 @@ void printTime() {
     Serial.println(rtcGetTimeStr());
 }
 
+int buttonState = HIGH;
+
 void loop() {
+    // Tempiorary button press reader
+    int buttonRead = digitalRead(BUTTON_PIN);
+    if (buttonRead == LOW && buttonState != buttonRead) {
+        Serial.println(F("Button pressed!"));
+        messageLastDisplay();
+        mainScreenTMO = 0;
+        buttonState = buttonRead;
+    } else {
+        buttonState = buttonRead;
+    }
+
     // blink status LED
     if (everySecond > 1000) {
         digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
@@ -127,10 +145,12 @@ void loop() {
         printTime();
     }
 
-    // the number of batches to wait for
-    // 2 batches will usually be enough to fit short and medium messages
-    if (pager.available() >= 2) {
-    // if (pager.available() >= 1) {
+    if (mainScreenTMO > MAIN_PAGE_TMO) {
+        // mainScreenTMO = 0; // reset after arrived Message shown on OLED
+        displayMainPage();
+    }
+
+    if (pager.available() >= MSG_BATCH_SIZE) {
         Serial.println();
         printTime();
         Serial.print(F("[Pager] Received pager data, decoding... "));
@@ -159,7 +179,9 @@ void loop() {
             Serial.print(F("Addr:\t"));
             Serial.println(addr);
 
-            messageParse(str, addr);
+            if (messageParse(str, addr)) {
+                mainScreenTMO = 0;
+            }
         } else {
             // some error occurred
             Serial.print(F("failed, code "));

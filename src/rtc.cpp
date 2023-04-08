@@ -22,6 +22,10 @@ String rtcGetTimeStr() {
     return rtc.getTime("%Y-%m-%d %H:%M:%S");
 }
 
+uint32_t rtcGetTimeUnix() {
+    return rtc.getEpoch();
+}
+
 void rtcSetTimeDate(int sec, int min, int hour, int day, int month, int year) {
     rtc.setTime(sec, min, hour, day, month, year);
     rtcSet = true;

@@ -13,6 +13,7 @@ https://github.com/erstec/POCSAG-ESP
 #include "screen.h"
 #include "rtc.h"
 #include "settings.h"
+#include "messages.h"
 
 // OLED display definitions
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -22,9 +23,11 @@ https://github.com/erstec/POCSAG-ESP
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 bool screenInit() {
+#if defined(ESP32DOIT_DEVKIT_V1)
     // OLED +3V3
-    pinMode(15, OUTPUT);
-    digitalWrite(15, HIGH);
+    pinMode(OLED_POWER_PIN, OUTPUT);
+    digitalWrite(OLED_POWER_PIN, HIGH);
+#endif
 
     // initialize I2C
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
@@ -66,7 +69,7 @@ void displayStatus(periph_status_t status) {
     display.display();
 }
 
-void displayMessage(String msg, uint32_t addr) {
+void displayMessage(String msg, uint32_t addr, uint32_t timestamp, bool newMessage) {
     if (msg.equals("<tone>")) return;
     // ignore pager error messages
     if (addr == 2007672) return;
@@ -86,16 +89,36 @@ void displayMessage(String msg, uint32_t addr) {
     display.display();
 }
 
-void displayTimeDate() {
+void displayTimeDate(bool run) {
     display.setCursor(1, 1);
     //display.drawRect(0, 0, display.width(), 8, WHITE);
     display.fillRect(0, 0, display.width(), 9, WHITE);
     display.setTextColor(BLACK, WHITE);
     display.println(rtcGetTimeDateStr());
-    display.display();
+    if (run) display.display();
 }
 
 void displayError() {
     display.println("Error!");
+    display.display();
+}
+
+void displayMainPage() {
+    display.clearDisplay();
+
+    displayTimeDate(false);
+
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0, 12);
+
+    display.println("Listening...");
+    display.setCursor(0, display.getCursorY() + 4);
+    display.println("Freq: " + String(SX1278_FREQ, 6) + " MHz");
+    display.println("  ID: " + String(SX1278_ADDR));
+    display.printf("RSSI: %s dBm\r\n", "---");
+    display.setCursor(0, display.getCursorY() + 5);
+    display.printf("Msgs: %d/%d", messageGetNewCount(), messageGetAllCount());
+
     display.display();
 }

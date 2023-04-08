@@ -13,4 +13,14 @@ https://github.com/erstec/POCSAG-ESP
 #include <Arduino.h>
 #include <ESP32Time.h>
 
-void messageParse(String str, uint32_t addr);
+typedef struct {
+    String message;
+    uint32_t address;
+    uint32_t timestamp;
+    bool newMessage;
+} message_ts;
+
+bool messageParse(String str, uint32_t addr);
+uint16_t messageGetAllCount();
+uint16_t messageGetNewCount();
+void messageLastDisplay();

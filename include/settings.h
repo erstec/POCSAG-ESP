@@ -10,9 +10,17 @@ Copyright (C) 2023 Ernest LY3PH
 https://github.com/erstec/POCSAG-ESP
 */
 
-#define VERSION "0.1.0"
+#define VERSION "0.1.1"
 
 #define UTC_OFFSET 3    // offset from GMT (+3 h)
+
+// the number of batches to wait for
+// 2 batches will usually be enough to fit short and medium messages
+#define MSG_BATCH_SIZE  2
+
+#define MAIN_PAGE_TMO   10000   // 10 seconds
+
+// #define RX_ONLY_ADDRESSED
 
 // Work configuration definitions
 // base (center) frequency:     439.987.500 MHz
@@ -25,6 +33,9 @@ https://github.com/erstec/POCSAG-ESP
 #if defined(ESP32DOIT_DEVKIT_V1)
 // DevKit-V1 specific definitions
 // Board specific definitions
+// Button and LED (built-in)
+#define BUTTON_PIN    0
+// #define LED_PIN       2
 // I2C BUS
 // #define SDA_PIN       21
 // #define SCL_PIN       22
@@ -33,6 +44,9 @@ https://github.com/erstec/POCSAG-ESP
 // #define MOSI_PIN      23
 // #define SCK_PIN       18
 // #define SS_PIN        5
+
+// OLED Power Pin
+#define OLED_POWER_PIN  4
 
 // SX1278 definitions
 #define SX1278_NSS    13
