@@ -13,6 +13,7 @@ https://github.com/erstec/POCSAG-ESP
 #include "messages.h"
 #include "rtc.h"
 #include "screen.h"
+#include "config.h"
 #include "settings.h"
 
 String year, month, day, hour, minute, second;
@@ -95,8 +96,23 @@ bool messageParse(String str, uint32_t addr) {
     } else {
         Serial.println("Unknown address: " + messageFormatID(addr));
 
-#ifdef RX_ONLY_ADDRESSED
-        if (addr == SX1278_ADDR) {
+        if (config.filterAddress) {
+            if (addr == config.address) {
+                if (messageValid(str, addr)) {
+                    _allMessages++;
+                    _newMessages++;
+
+                    _lastMessage.message = str;
+                    _lastMessage.address = addr;
+                    _lastMessage.timestamp = rtcGetTimeUnix();
+                    _lastMessage.newMessage = true;
+
+                    displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
+                }
+            }
+        }
+        else
+        {
             if (messageValid(str, addr)) {
                 _allMessages++;
                 _newMessages++;
@@ -109,19 +125,6 @@ bool messageParse(String str, uint32_t addr) {
                 displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
             }
         }
-#else
-        if (messageValid(str, addr)) {
-            _allMessages++;
-            _newMessages++;
-
-            _lastMessage.message = str;
-            _lastMessage.address = addr;
-            _lastMessage.timestamp = rtcGetTimeUnix();
-            _lastMessage.newMessage = true;
-
-            displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
-        }
-#endif
 
         return true;
     }

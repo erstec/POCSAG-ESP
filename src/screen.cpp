@@ -14,6 +14,7 @@ https://github.com/erstec/POCSAG-ESP
 #include "rtc.h"
 #include "settings.h"
 #include "messages.h"
+#include "config.h"
 
 // OLED display definitions
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -139,8 +140,8 @@ void displayMainPage() {
 
     display.println("Listening...");
     display.setCursor(0, display.getCursorY() + 4);
-    display.println("Freq: " + String(SX1278_FREQ, 6) + " MHz");
-    display.println("  ID: " + messageFormatID(SX1278_ADDR));
+    display.println("Freq: " + String(config.freq, 6) + " MHz");
+    display.println("  ID: " + messageFormatID(config.address));
     // display.printf("RSSI: %s dBm\r\n", "---");
     display.setCursor(0, display.getCursorY() + 5);
     display.printf("Msgs: %d/%d ", newMsgsCnt, msgsCnt);

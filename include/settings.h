@@ -29,11 +29,12 @@ https://github.com/erstec/POCSAG-ESP
 // base (center) frequency:     439.987.500 MHz
 // speed:                       1200 bps
 // address of this "pager":     1234567
-#define SX1278_FREQ   439.987500
+#define SX1278_FREQ   439987500
 #define SX1278_BPS    1200
 #define SX1278_ADDR   1234567
 
 #if defined(ESP32DOIT_DEVKIT_V1)
+#define BUILD_VER "ESP32 DOIT DEVKIT V1"
 // DevKit-V1 specific definitions
 // Board specific definitions
 // Button and LED (built-in)
@@ -60,6 +61,7 @@ https://github.com/erstec/POCSAG-ESP
 #endif
 
 #if defined(TTGO_LORA32_V21)
+#define BUILD_VER "TTGO LORA32 V2.1"
 // // TTGO Board specific definitions
 // #define HPDIO1 33
 // #define HPDIO2 32

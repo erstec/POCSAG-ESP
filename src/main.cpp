@@ -17,6 +17,8 @@ https://github.com/erstec/POCSAG-ESP
 #include "screen.h"
 #include "messages.h"
 #include "rtc.h"
+#include "serialProtocol.h"
+#include "config.h"
 
 #include "settings.h"
 
@@ -68,11 +70,14 @@ void setup() {
     // initialize serial port
     Serial.begin(115200);
     Serial.println("\r\n\r\nStarting POCSAG-ESP v" VERSION " by LY3PH...");
+    Serial.println(BUILD_VER);
 
     if (!screenInit()) {
         Serial.println(F("Failed to initialize screen!"));
         blinkError();
     }
+
+    configLoad();
 
     // initialize SX1278 with default settings
     Serial.print(F("[SX1278] Initializing... "));
@@ -93,8 +98,10 @@ void setup() {
     }
 
     // initialize Pager client
+    Serial.printf("%.6f\r\n", config.freq);
     Serial.print(F("[Pager] Initializing... "));
-    state = pager.begin(SX1278_FREQ, SX1278_BPS);
+
+    state = pager.begin(config.freq, config.baud);
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
         displayStatus(STATUS_PAGER);
@@ -107,7 +114,7 @@ void setup() {
 
     // start receiving POCSAG messages
     Serial.print(F("[Pager] Starting to listen... "));
-    state = pager.startReceive(pin, SX1278_ADDR, 0U); // no address filtering default 0xFFFFF - filtered to exact address only)
+    state = pager.startReceive(pin, config.address, 0U); // no address filtering default 0xFFFFF - filtered to exact address only)
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
         displayStatus(STATUS_LISTENING);
@@ -134,6 +141,9 @@ static message_ts _messages[MESSAGES_MAX_COUNT];
 static int msgIdx = 0;
 static int delayedParse = 0;
 #endif
+
+String inputString = "";         // a string to hold incoming data
+boolean stringComplete = false;  // whether the string is complete
 
 void loop() {
     // Temporary button press interrupt reader
@@ -178,6 +188,9 @@ void loop() {
 #ifdef DELAYED_PARSE
     }
 #endif
+
+// ------------------ Pager Client ------------------
+
 #ifdef DELAYED_PARSE
     // Read all messages from the buffer
     while (pager.available() > 0) {
@@ -267,6 +280,29 @@ void loop() {
             }
             Serial.println();
         }
+    }
+
+    // ------------------ Serial input ------------------
+
+    if (Serial.available() > 0) {
+        // read the incoming byte:
+        char inChar = (char)Serial.read();
+
+        // add it to the inputString:
+        inputString += inChar;
+
+        // if the incoming character is a newline, set a flag
+        // so the main loop can do something about it:
+        if (inChar == '\n') {
+            stringComplete = true;
+        }
+    }
+
+    if (stringComplete) {
+        Serial.println(inputString);
+        spParseCmd(inputString);
+        inputString = "";
+        stringComplete = false;
     }
 #endif
 }
