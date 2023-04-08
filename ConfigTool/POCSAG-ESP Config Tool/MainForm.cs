@@ -88,6 +88,9 @@ namespace POCSAG_ESP_Config_Tool
             comPortName = "COM" + comPortName;  // add trimmed COM back            
 
             portName = comPortName;
+
+            bGet.Enabled = cbPorts.SelectedIndex != -1;
+            bSend.Enabled = bGet.Enabled;
         }
 
         private void cbPorts_DropDown(object sender, EventArgs e)
@@ -115,6 +118,9 @@ namespace POCSAG_ESP_Config_Tool
             }
 
             senderComboBox.DropDownWidth = width;
+
+            bGet.Enabled = cbPorts.SelectedIndex != -1;
+            bSend.Enabled = bGet.Enabled;
         }
 
         private delegate void SetTextDelegate(object o, string objType, string text);
@@ -219,6 +225,11 @@ namespace POCSAG_ESP_Config_Tool
             {
                 //
             }
+        }
+
+        private void bSend_Click(object sender, EventArgs e)
+        {
+            //
         }
     }
 }

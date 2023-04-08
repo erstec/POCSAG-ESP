@@ -45,6 +45,7 @@ namespace POCSAG_ESP_Config_Tool
             this.cbxFilterID = new System.Windows.Forms.CheckBox();
             this.lVersion = new System.Windows.Forms.Label();
             this.lBuild = new System.Windows.Forms.Label();
+            this.bSend = new System.Windows.Forms.Button();
             this.gbSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudCode)).BeginInit();
@@ -52,11 +53,12 @@ namespace POCSAG_ESP_Config_Tool
             // 
             // bGet
             // 
-            this.bGet.Location = new System.Drawing.Point(212, 10);
+            this.bGet.Enabled = false;
+            this.bGet.Location = new System.Drawing.Point(193, 10);
             this.bGet.Name = "bGet";
             this.bGet.Size = new System.Drawing.Size(75, 23);
             this.bGet.TabIndex = 0;
-            this.bGet.Text = "Get";
+            this.bGet.Text = "Read";
             this.bGet.UseVisualStyleBackColor = true;
             this.bGet.Click += new System.EventHandler(this.bGet_Click);
             // 
@@ -228,11 +230,23 @@ namespace POCSAG_ESP_Config_Tool
             this.lBuild.TabIndex = 4;
             this.lBuild.Text = "BuildHere";
             // 
+            // bSend
+            // 
+            this.bSend.Enabled = false;
+            this.bSend.Location = new System.Drawing.Point(284, 10);
+            this.bSend.Name = "bSend";
+            this.bSend.Size = new System.Drawing.Size(75, 23);
+            this.bSend.TabIndex = 5;
+            this.bSend.Text = "Write";
+            this.bSend.UseVisualStyleBackColor = true;
+            this.bSend.Click += new System.EventHandler(this.bSend_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(392, 439);
+            this.Controls.Add(this.bSend);
             this.Controls.Add(this.lBuild);
             this.Controls.Add(this.lVersion);
             this.Controls.Add(this.gbSettings);
@@ -268,6 +282,7 @@ namespace POCSAG_ESP_Config_Tool
         private System.Windows.Forms.CheckBox cbxFilterID;
         private System.Windows.Forms.Label lVersion;
         private System.Windows.Forms.Label lBuild;
+        private System.Windows.Forms.Button bSend;
     }
 }
 
