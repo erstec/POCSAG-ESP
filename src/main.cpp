@@ -159,6 +159,9 @@ void loop() {
             // otherwise it is routine of main screen refresh function
             if (!_mainPageActive) {
                 displayTimeDate();
+            } else {
+                // mainScreenTMO = 0; // reset after arrived Message shown on OLED
+                displayMainPage();
             }
         }
 
@@ -166,11 +169,11 @@ void loop() {
             every5Seconds = 0;
             //Serial.println(rtc.getTime("%A, %B %d %Y %H:%M:%S"));   // (String) returns time with specified format
             printTime();
-        }
-
-        if (_mainPageActive) {
-            // mainScreenTMO = 0; // reset after arrived Message shown on OLED
-            displayMainPage();
+            // Serial.print(F("RSSI: "));
+            // Serial.print(radio.getRSSI(true));
+            // Serial.print(F(" dBm, AFC: "));
+            // Serial.print(radio.getAFCError());
+            // Serial.println(F(" Hz"));
         }
 #ifdef DELAYED_PARSE
     }
@@ -220,9 +223,9 @@ void loop() {
         }
     }
 #else
-    //while (pager.available() > 0) {
-    while (pager.available() >= MSG_BATCH_SIZE) {
-    //if (pager.available() >= MSG_BATCH_SIZE) {
+    // while (pager.available() > 0) {
+    // while (pager.available() >= MSG_BATCH_SIZE) {
+    if (pager.available() >= MSG_BATCH_SIZE) {
         Serial.println();
         printTime();
         Serial.print(F("[Pager] Received pager data, decoding... "));
@@ -230,7 +233,7 @@ void loop() {
         // you can read the data as an Arduino String
         String str;
         size_t len = 0U;
-        uint32_t addr = 0U;
+        uint32_t addr = 79U;
         int state = pager.readData(str, len, &addr);
 
         // you can also receive data as byte array

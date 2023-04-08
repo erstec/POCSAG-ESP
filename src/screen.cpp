@@ -141,7 +141,7 @@ void displayMainPage() {
     display.setCursor(0, display.getCursorY() + 4);
     display.println("Freq: " + String(SX1278_FREQ, 6) + " MHz");
     display.println("  ID: " + messageFormatID(SX1278_ADDR));
-    display.printf("RSSI: %s dBm\r\n", "---");
+    // display.printf("RSSI: %s dBm\r\n", "---");
     display.setCursor(0, display.getCursorY() + 5);
     display.printf("Msgs: %d/%d ", newMsgsCnt, msgsCnt);
     if (newMsgsCnt > 0) {
