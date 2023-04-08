@@ -16,3 +16,4 @@ String rtcGetTimeStr();
 uint32_t rtcGetTimeUnix();
 void rtcSetTimeDate(int sec, int min, int hour, int day, int month, int year);
 String rtcGetTimeDateStr();
+bool rtcCheckTimeDateNeedUpdate(unsigned long time);
