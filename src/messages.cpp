@@ -38,6 +38,11 @@ static bool messageValid(String msg, uint32_t addr) {
     if (addr == 2007672) return false;
     if (msg.length() > 80) return false;
 
+    // 0x20 - 0x7E
+    for (int i = 0; i < msg.length(); i++) {
+        if (msg[i] < 0x20 || msg[i] > 0x7E) return false;
+    }
+
     return true;
 }
 
