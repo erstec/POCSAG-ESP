@@ -17,10 +17,13 @@ https://github.com/erstec/POCSAG-ESP
 // the number of batches to wait for
 // 2 batches will usually be enough to fit short and medium messages
 #define MSG_BATCH_SIZE  2
+// #define MSG_BATCH_SIZE  1
 
 #define MAIN_PAGE_TMO   10000   // 10 seconds
 
 // #define RX_ONLY_ADDRESSED
+
+// #define DELAYED_PARSE
 
 // Work configuration definitions
 // base (center) frequency:     439.987.500 MHz

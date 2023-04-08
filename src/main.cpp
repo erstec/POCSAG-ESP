@@ -49,6 +49,13 @@ void blinkError() {
     }
 }
 
+static int _buttonState = HIGH;
+
+void IRAM_ATTR buttonISR() {
+    //_buttonState = digitalRead(BUTTON_PIN);
+    _buttonState = LOW;
+}
+
 void setup() {
     // initialize built-in LED
     pinMode(LED_BUILTIN, OUTPUT);
@@ -56,6 +63,7 @@ void setup() {
 
     // initialize built-in button
     pinMode(BUTTON_PIN, INPUT_PULLUP);
+    attachInterrupt(BUTTON_PIN, buttonISR, FALLING);
 
     // initialize serial port
     Serial.begin(115200);
@@ -117,40 +125,104 @@ void printTime() {
     Serial.println(rtcGetTimeStr());
 }
 
-int buttonState = HIGH;
+static bool _mainPageActive = false;
+
+#ifdef DELAYED_PARSE
+#define DELAYED_PARSE_DELAY (100000 * 5)
+#define MESSAGES_MAX_COUNT 10
+static message_ts _messages[MESSAGES_MAX_COUNT];
+static int msgIdx = 0;
+static int delayedParse = 0;
+#endif
 
 void loop() {
-    // Tempiorary button press reader
-    int buttonRead = digitalRead(BUTTON_PIN);
-    if (buttonRead == LOW && buttonState != buttonRead) {
+    // Temporary button press interrupt reader
+    if (_buttonState == LOW) {
         Serial.println(F("Button pressed!"));
         messageLastDisplay();
         mainScreenTMO = 0;
-        buttonState = buttonRead;
-    } else {
-        buttonState = buttonRead;
+        displayMainPageRefresh();
+        _buttonState = HIGH;
+    } 
+    
+    _mainPageActive = (mainScreenTMO > MAIN_PAGE_TMO) ? true : false;
+
+#ifdef DELAYED_PARSE
+    if (delayedParse == 0) {
+#endif
+        // blink status LED
+        if (everySecond > 1000) {
+            digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+            everySecond = 0;
+
+            // if not in main screen, show time and date
+            // otherwise it is routine of main screen refresh function
+            if (!_mainPageActive) {
+                displayTimeDate();
+            }
+        }
+
+        if (every5Seconds > 5000) {
+            every5Seconds = 0;
+            //Serial.println(rtc.getTime("%A, %B %d %Y %H:%M:%S"));   // (String) returns time with specified format
+            printTime();
+        }
+
+        if (_mainPageActive) {
+            // mainScreenTMO = 0; // reset after arrived Message shown on OLED
+            displayMainPage();
+        }
+#ifdef DELAYED_PARSE
+    }
+#endif
+#ifdef DELAYED_PARSE
+    // Read all messages from the buffer
+    while (pager.available() > 0) {
+        String str;
+        size_t len = 0U;
+        uint32_t addr = 0U;
+        int state = pager.readData(str, len, &addr);
+
+        if (state == RADIOLIB_ERR_NONE) {
+            _messages[msgIdx].message = str;
+            _messages[msgIdx].address = addr;
+            
+            msgIdx++;
+
+            if (msgIdx >= MESSAGES_MAX_COUNT) {
+                msgIdx = 0;
+                Serial.println(F("Message buffer overflow!"));
+            }
+        }
+
+        delayedParse = DELAYED_PARSE_DELAY;
     }
 
-    // blink status LED
-    if (everySecond > 1000) {
-        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-        everySecond = 0;
-
-        displayTimeDate();
+    if (delayedParse > 0) {
+        delayedParse--;
     }
 
-    if (every5Seconds > 5000) {
-        every5Seconds = 0;
-        //Serial.println(rtc.getTime("%A, %B %d %Y %H:%M:%S"));   // (String) returns time with specified format
-        printTime();
-    }
+    if (delayedParse == 0) {
+        if (msgIdx > 0) Serial.printf("Got %d messages\r\n", msgIdx);
 
-    if (mainScreenTMO > MAIN_PAGE_TMO) {
-        // mainScreenTMO = 0; // reset after arrived Message shown on OLED
-        displayMainPage();
-    }
+        // Parse all messages
+        while (msgIdx > 0) {
+            msgIdx--;
 
-    if (pager.available() >= MSG_BATCH_SIZE) {
+            Serial.printf("Showing message %d\r\n", msgIdx + 1);
+            Serial.println("Data: " + _messages[msgIdx].message);
+            Serial.println("Address: " + String(_messages[msgIdx].address));
+
+            if (messageParse(_messages[msgIdx].message, _messages[msgIdx].address)) {
+                mainScreenTMO = 0;
+                displayMainPageRefresh();
+            }
+        }
+    }
+#else
+    //while (pager.available() > 0) {
+    while (pager.available() >= MSG_BATCH_SIZE) {
+    //if (pager.available() >= MSG_BATCH_SIZE) {
         Serial.println();
         printTime();
         Serial.print(F("[Pager] Received pager data, decoding... "));
@@ -177,10 +249,11 @@ void loop() {
             Serial.print(F("Len:\t"));
             Serial.println(str.length());
             Serial.print(F("Addr:\t"));
-            Serial.println(addr);
+            Serial.println(messageFormatID(addr));
 
             if (messageParse(str, addr)) {
                 mainScreenTMO = 0;
+                displayMainPageRefresh();
             }
         } else {
             // some error occurred
@@ -192,4 +265,5 @@ void loop() {
             Serial.println();
         }
     }
+#endif
 }

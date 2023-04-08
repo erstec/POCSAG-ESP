@@ -24,6 +24,23 @@ static uint16_t _newMessages = 0;
 //static message_ts _messages[MESSAGES_MAX_COUNT];
 static message_ts _lastMessage;
 
+String messageFormatID(uint32_t addr) {
+    String str = String(addr);
+    while (str.length() < 7) {
+        str = "0" + str;
+    }
+    return str;
+}
+
+static bool messageValid(String msg, uint32_t addr) {
+    if (msg.equals("<tone>")) return false;
+    // ignore pager error messages
+    if (addr == 2007672) return false;
+    if (msg.length() > 80) return false;
+
+    return true;
+}
+
 bool messageParse(String str, uint32_t addr) {
     if (addr == 216) { // 0000216 - Time announcement in UTC
         if (str.startsWith("YYYYMMDDHHMMSS")) {
@@ -71,10 +88,24 @@ bool messageParse(String str, uint32_t addr) {
             rtcSetTimeDate(second.toInt(), minute.toInt(), hour.toInt(), day.toInt(), month.toInt(), year.toInt() + 2000);
         }
     } else {
-        Serial.println("Unknown address: " + String(addr));
+        Serial.println("Unknown address: " + messageFormatID(addr));
 
 #ifdef RX_ONLY_ADDRESSED
         if (addr == SX1278_ADDR) {
+            if (messageValid(str, addr)) {
+                _allMessages++;
+                _newMessages++;
+
+                _lastMessage.message = str;
+                _lastMessage.address = addr;
+                _lastMessage.timestamp = rtcGetTimeUnix();
+                _lastMessage.newMessage = true;
+
+                displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
+            }
+        }
+#else
+        if (messageValid(str, addr)) {
             _allMessages++;
             _newMessages++;
 
@@ -85,16 +116,6 @@ bool messageParse(String str, uint32_t addr) {
 
             displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
         }
-#else
-        _allMessages++;
-        _newMessages++;
-
-        _lastMessage.message = str;
-        _lastMessage.address = addr;
-        _lastMessage.timestamp = rtcGetTimeUnix();
-        _lastMessage.newMessage = true;
-
-        displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
 #endif
 
         return true;
@@ -108,7 +129,7 @@ void messageLastDisplay() {
         displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
         _newMessages = 0;
     } else {
-        displayMessage("No messages", 0, 0, false);
+        displayMessage("");
     }
 }
 

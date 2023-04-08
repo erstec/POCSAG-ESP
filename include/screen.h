@@ -22,7 +22,8 @@ typedef enum {
 
 bool screenInit();
 void displayStatus(periph_status_t status);
-void displayMessage(String msg, uint32_t addr, uint32_t timestamp, bool newMessage = false);
+void displayMessage(String msg, uint32_t addr = 0U, uint32_t timestamp = 0U, bool newMessage = false);
 void displayTimeDate(bool run = true);
 void displayError();
 void displayMainPage();
+void displayMainPageRefresh();

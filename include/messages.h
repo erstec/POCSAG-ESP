@@ -20,6 +20,7 @@ typedef struct {
     bool newMessage;
 } message_ts;
 
+String messageFormatID(uint32_t addr);
 bool messageParse(String str, uint32_t addr);
 uint16_t messageGetAllCount();
 uint16_t messageGetNewCount();
