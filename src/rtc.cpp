@@ -39,7 +39,7 @@ void rtcSetTimeDate(int sec, int min, int hour, int day, int month, int year) {
     if (rtcCheckTimeDateNeedUpdate(t)) {     
         rtc.setTime(sec, min, hour, day, month, year);
         rtcSet = true;
-        Serial.println("RTC set");
+        Serial.println("[RTC] set");
     }
 }
 
@@ -51,7 +51,7 @@ bool rtcCheckTimeDateNeedUpdate(unsigned long time) {
     bool result = false;
     unsigned long currentTime = rtc.getEpoch();
     int timeDrifted = currentTime - time;
-    Serial.println("RTC time drift: " + String(timeDrifted) + " seconds");
+    Serial.println("[RTC] time drift: " + String(timeDrifted) + " seconds");
     if (timeDrifted > 0) {
         if (timeDrifted > 60) {
             result = true;

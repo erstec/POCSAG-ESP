@@ -73,7 +73,7 @@ void setup() {
     Serial.println(BUILD_VER);
 
     if (!screenInit()) {
-        Serial.println(F("Failed to initialize screen!"));
+        Serial.println(F("[OLED] Failed to initialize screen!"));
         blinkError();
     }
 
@@ -82,31 +82,33 @@ void setup() {
     // initialize SX1278 with default settings
     Serial.print(F("[SX1278] Initializing... "));
     int state = radio.beginFSK();
+    // radio.setAFC(true);
+    // radio.setGain(0); // 1-6, 0 - auto
 
     // when using one of the non-LoRa modules
     // (RF69, CC1101, Si4432 etc.), use the basic begin() method
     // int state = radio.begin();
 
     if (state == RADIOLIB_ERR_NONE) {
-        Serial.println(F("success!"));
+        Serial.println(F("ok"));
         displayStatus(STATUS_SX);
     } else {
-        Serial.print(F("failed, code "));
+        Serial.print(F("fail, code "));
         Serial.print(state);
         Serial.println(". Halting.");
         blinkError();
     }
 
     // initialize Pager client
-    Serial.printf("%.6f\r\n", config.freq);
+    Serial.printf("[Pager] Freq: %.6f\r\n", config.freq);
     Serial.print(F("[Pager] Initializing... "));
 
     state = pager.begin(config.freq, config.baud);
     if (state == RADIOLIB_ERR_NONE) {
-        Serial.println(F("success!"));
+        Serial.println(F("ok"));
         displayStatus(STATUS_PAGER);
     } else {
-        Serial.print(F("failed, code "));
+        Serial.print(F("fail, code "));
         Serial.print(state);
         Serial.println(". Halting.");
         blinkError();
@@ -116,10 +118,10 @@ void setup() {
     Serial.print(F("[Pager] Starting to listen... "));
     state = pager.startReceive(pin, config.address, 0U); // no address filtering default 0xFFFFF - filtered to exact address only)
     if (state == RADIOLIB_ERR_NONE) {
-        Serial.println(F("success!"));
+        Serial.println(F("ok"));
         displayStatus(STATUS_LISTENING);
     } else {
-        Serial.print(F("failed, code "));
+        Serial.print(F("fail, code "));
         Serial.print(state);
         Serial.println(F(". Halting."));
         blinkError();
@@ -148,7 +150,7 @@ boolean stringComplete = false;  // whether the string is complete
 void loop() {
     // Temporary button press interrupt reader
     if (_buttonState == LOW) {
-        Serial.println(F("Button pressed!"));
+        Serial.println(F("[GPIO] Button pressed"));
         messageLastDisplay();
         mainScreenTMO = 0;
         displayMainPageRefresh();
@@ -226,6 +228,7 @@ void loop() {
             msgIdx--;
 
             Serial.printf("Showing message %d\r\n", msgIdx + 1);
+            Serial.println(F("<SOM>"));
             Serial.println("Data: " + _messages[msgIdx].message);
             Serial.println("Address: " + String(_messages[msgIdx].address));
 
@@ -233,6 +236,7 @@ void loop() {
                 mainScreenTMO = 0;
                 displayMainPageRefresh();
             }
+            Serial.println(F("<EOM>"));
         }
     }
 #else
@@ -240,8 +244,8 @@ void loop() {
     // while (pager.available() >= MSG_BATCH_SIZE) {
     if (pager.available() >= MSG_BATCH_SIZE) {
         Serial.println();
-        printTime();
-        Serial.print(F("[Pager] Received pager data, decoding... "));
+        // printTime();
+        Serial.print(F("[Pager] Data decoding... "));
 
         // you can read the data as an Arduino String
         String str;
@@ -257,23 +261,28 @@ void loop() {
         */
 
         if (state == RADIOLIB_ERR_NONE) {
-            Serial.println(F("success!"));
+            Serial.println(F("ok"));
 
             // print the received data
+            Serial.println("<SOM>");
+            Serial.print(F("ID:\t"));
+            Serial.println(messageGetTotalParsed());
+            Serial.print(F("TS:\t"));
+            Serial.println(rtcGetTimeStr());
             Serial.print(F("Data:\t"));
             Serial.println(str);
             Serial.print(F("Len:\t"));
             Serial.println(str.length());
             Serial.print(F("Addr:\t"));
             Serial.println(messageFormatID(addr));
-
             if (messageParse(str, addr)) {
                 mainScreenTMO = 0;
                 displayMainPageRefresh();
             }
+            Serial.println("<EOM>");
         } else {
             // some error occurred
-            Serial.print(F("failed, code "));
+            Serial.print(F("fail, code "));
             Serial.print(state);
             if (state == RADIOLIB_ERR_ADDRESS_NOT_FOUND) {
                 Serial.print(F(". Address not found"));
