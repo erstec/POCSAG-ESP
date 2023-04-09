@@ -74,7 +74,7 @@ bool messageParse(String str, uint32_t addr) {
             rtcSetTimeDate(second.toInt(), minute.toInt(), hour.toInt(), day.toInt(), month.toInt(), year.toInt() + 2000);
         }
     }
-    else if (addr == 4520) {
+    else if (addr == 4520 || addr == 4512) {
         Serial.println("Skyper message");
     }
     else if (addr == 8) {

@@ -28,6 +28,7 @@ bool screenInit() {
     // OLED +3V3
     pinMode(OLED_POWER_PIN, OUTPUT);
     digitalWrite(OLED_POWER_PIN, HIGH);
+    delay(250);
 #endif
 
     // initialize I2C
