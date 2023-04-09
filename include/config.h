@@ -17,6 +17,7 @@ typedef struct {
     uint16_t baud;
     uint32_t address;
     bool filterAddress;
+    uint8_t utcOffset;
 } Config_ts;
 
 extern Config_ts config;

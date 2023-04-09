@@ -26,6 +26,7 @@ void spParseCmd(String str) {
             Serial.println(config.baud);
             Serial.println(config.address);
             Serial.println(config.filterAddress);
+            Serial.println(config.utcOffset);
         // }
     }
     else if (str.startsWith("SAVE")) {

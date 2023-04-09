@@ -24,6 +24,7 @@ void configLoad() {
 #else
     config.filterAddress = false;
 #endif
+    config.utcOffset = UTC_OFFSET;
 
     // if (SPIFFS.begin()) {
     //     if (SPIFFS.exists("/config.json")) {
