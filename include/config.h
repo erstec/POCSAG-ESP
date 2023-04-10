@@ -22,4 +22,6 @@ typedef struct {
 
 extern Config_ts config;
 
+bool configInit();
 void configLoad();
+void configSave();

@@ -77,6 +77,11 @@ void setup() {
         blinkError();
     }
 
+    if (!configInit()) {
+        Serial.println(F("[CFG] Failed to initialize config!"));
+        blinkError();
+    }
+
     configLoad();
 
     // initialize SX1278 with default settings
