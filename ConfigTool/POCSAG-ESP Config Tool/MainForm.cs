@@ -8,6 +8,7 @@ using System.Linq;
 using System.Management;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -82,6 +83,14 @@ namespace POCSAG_ESP_Config_Tool
             }
         }
 
+        private void guiShow(bool state = true)
+        {
+            bool show = cbPorts.SelectedIndex != -1 && state;
+            bGet.Enabled = show;
+            bSend.Enabled = show;
+            bRestart.Enabled = show;
+        }
+
         private string portName = "";
 
         private void cbPorts_SelectedIndexChanged(object sender, EventArgs e)
@@ -91,8 +100,7 @@ namespace POCSAG_ESP_Config_Tool
 
             portName = comPortName;
 
-            bGet.Enabled = cbPorts.SelectedIndex != -1;
-            bSend.Enabled = bGet.Enabled;
+            guiShow();
         }
 
         private void cbPorts_DropDown(object sender, EventArgs e)
@@ -121,8 +129,7 @@ namespace POCSAG_ESP_Config_Tool
 
             senderComboBox.DropDownWidth = width;
 
-            bGet.Enabled = cbPorts.SelectedIndex != -1;
-            bSend.Enabled = bGet.Enabled;
+            guiShow();
         }
 
         private delegate void SetTextDelegate(object o, string objType, string text);
@@ -161,76 +168,164 @@ namespace POCSAG_ESP_Config_Tool
         
         private bool compatibleVersions = false;
 
+        private void portOpen()
+        {
+            _serialPort = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
+            _serialPort.Handshake = Handshake.None;
+            //_serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
+            _serialPort.WriteTimeout = 500;
+
+            //try
+            //{
+                _serialPort.Open();
+            //} 
+            //catch (Exception)
+            //{
+                //
+            //}
+        }
+
+        private void portClose()
+        {
+            if (_serialPort.IsOpen) _serialPort.Close();
+        }
+
         void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            string data = "";
-            while (_serialPort.BytesToRead > 0)
-            {
-                data = _serialPort.ReadLine();
+            //string data = "";
+            //while (_serialPort.BytesToRead > 0)
+            //{
+            //    data = _serialPort.ReadLine();
 
-                if (data.Contains("version"))
-                {
-                    data = _serialPort.ReadLine();
+            //    if (data.Contains("version"))
+            //    {
+            //        data = _serialPort.ReadLine();
                     
-                    data = _serialPort.ReadLine();
-                    // POCSAG-ESP v0.1.1 by LY3PH
-                    if (data.StartsWith("POCSAG-ESP"))
-                    {
-                        string version = data.Substring(12, data.IndexOf(" by") - 12);
+            //        data = _serialPort.ReadLine();
+            //        // POCSAG-ESP v0.1.1 by LY3PH
+            //        if (data.StartsWith("POCSAG-ESP"))
+            //        {
+            //            string version = data.Substring(12, data.IndexOf(" by") - 12);
 
-                        compatibleVersions = (appVersion == version);
+            //            compatibleVersions = (appVersion == version);
 
-                        //lVersion.Text = version;
-                        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lVersion, "l", compatibleVersions ? version : "INCOMPATIBLE VERSION " + version });
+            //            //lVersion.Text = version;
+            //            BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lVersion, "l", compatibleVersions ? version : "INCOMPATIBLE VERSION " + version });
 
-                        data = _serialPort.ReadLine();
-                        string build = data;
-                        //lBuild.Text = build;
-                        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lBuild, "l", build });
-                    }
-                }
-                else if (data.Contains("get"))
-                {
-                    data = _serialPort.ReadLine();
+            //            data = _serialPort.ReadLine();
+            //            string build = data;
+            //            //lBuild.Text = build;
+            //            BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lBuild, "l", build });
+            //        }
+            //    }
+            //    else if (data.Contains("get"))
+            //    {
+            //        data = _serialPort.ReadLine();
                     
-                    data = _serialPort.ReadLine();
-                    string freq = data;
-                    BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { tbFreq, "tb", freq });
+            //        data = _serialPort.ReadLine();
+            //        string freq = data;
+            //        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { tbFreq, "tb", freq });
 
-                    data = _serialPort.ReadLine();
-                    string baud = data;
-                    BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { cbBaudrate, "cb", baud });
+            //        data = _serialPort.ReadLine();
+            //        string baud = data;
+            //        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { cbBaudrate, "cb", baud });
 
-                    data = _serialPort.ReadLine();
-                    string code = data;
-                    BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { nudCode, "nud", code });
+            //        data = _serialPort.ReadLine();
+            //        string code = data;
+            //        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { nudCode, "nud", code });
 
-                    data = _serialPort.ReadLine();
-                    string filter = data;
-                    BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { cbxFilterID, "cbx", filter });
+            //        data = _serialPort.ReadLine();
+            //        string filter = data;
+            //        BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { cbxFilterID, "cbx", filter });
 
-                }
-            }
+            //    }
+            //}
             
-            _serialPort.Close();
-            _serialPort.Dispose();
-            _serialPort = null;
+            //_serialPort.Close();
+            //_serialPort.Dispose();
+            //_serialPort = null;
         }
 
         private void bGet_Click(object sender, EventArgs e)
         {
-            _serialPort = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
-            _serialPort.Handshake = Handshake.None;
-            _serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
-            _serialPort.WriteTimeout = 500;
             try
             {
-                _serialPort.Open();
+                portOpen();
+
                 _serialPort.Write("version\r\nget\r\n");
+
+                Thread.Sleep(250);
+
+                string data = "";
+                while (_serialPort.BytesToRead > 0)
+                {
+                    data = _serialPort.ReadLine();
+
+                    if (data.Contains("version"))
+                    {
+                        data = _serialPort.ReadLine();
+
+                        data = _serialPort.ReadLine();
+                        // POCSAG-ESP v0.1.1 by LY3PH
+                        if (data.StartsWith("POCSAG-ESP"))
+                        {
+                            string version = data.Substring(12, data.IndexOf(" by") - 12);
+
+                            compatibleVersions = (appVersion == version);
+
+                            lVersion.Text = compatibleVersions ? version : "INCOMPATIBLE VERSION " + version;
+                            //BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lVersion, "l", compatibleVersions ? version : "INCOMPATIBLE VERSION " + version });
+
+                            data = _serialPort.ReadLine();
+                            string build = data;
+                            lBuild.Text = build;
+                            //BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { lBuild, "l", build });
+                        }
+                    }
+                }
+
+                _serialPort.Write("get\r\n");
+
+                Thread.Sleep(250);
+
+                while (_serialPort.BytesToRead > 0) {
+                    data = _serialPort.ReadLine();
+
+                    if (data.Contains("get"))
+                    {
+                        data = _serialPort.ReadLine();
+
+                        data = _serialPort.ReadLine();
+                        string freq = data;
+                        tbFreq.Text = freq;
+                        //BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { tbFreq, "tb", freq });
+
+                        data = _serialPort.ReadLine();
+                        string baud = data;
+                        cbBaudrate.SelectedItem = baud;
+                        //BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { cbBaudrate, "cb", baud });
+
+                        data = _serialPort.ReadLine();
+                        string code = data;
+                        int numVal = Int32.Parse(data.Trim());
+                        nudCode.Value = numVal;
+                        //BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { nudCode, "nud", code });
+
+                        data = _serialPort.ReadLine();
+                        string filter = data;
+                        cbxFilterID.Checked = filter.Equals("1");
+                        //BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { cbxFilterID, "cbx", filter });
+
+                    }
+                }
             }
             catch (Exception ex)
             {
                 //
+            }
+            finally
+            {
+                portClose();
             }
         }
 
@@ -240,6 +335,30 @@ namespace POCSAG_ESP_Config_Tool
             {
                 MessageBox.Show("Wrong FW and Config Tool versions!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+        }
+
+        private void bRestart_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure to restart device?", "Question", MessageBoxButtons.YesNo) == DialogResult.No) {
+                return;
+            }
+
+            try
+            {
+                portOpen();
+
+                _serialPort.Write("reboot\r\n");
+
+
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                portClose();
             }
         }
     }
