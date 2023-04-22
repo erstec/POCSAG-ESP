@@ -98,12 +98,23 @@ void displayMessage(String msg, uint32_t addr, uint32_t timestamp, bool newMessa
     // display.dim(false);
 }
 
+#if defined(TTGO_LORA32_V21)
+extern float battVoltage;
+#endif
+
 void displayTimeDate(bool run) {
     display.setCursor(1, 1);
     //display.drawRect(0, 0, display.width(), 8, WHITE);
     display.fillRect(0, 0, display.width(), 9, WHITE);
     display.setTextColor(BLACK, WHITE);
     display.println(rtcGetTimeDateStr());
+
+#if defined(TTGO_LORA32_V21)
+    display.setCursor(display.width() - (6 * 4), (8 * 7) + 1);
+    display.setTextColor(WHITE, BLACK);
+    display.printf("%.1f", battVoltage);
+#endif
+
     if (run) display.display();
 }
 

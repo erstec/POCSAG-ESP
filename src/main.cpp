@@ -69,6 +69,11 @@ void setup() {
     attachInterrupt(BUTTON_PIN, buttonISR, FALLING);
 #endif
 
+#if defined(TTGO_LORA32_V21)
+    // initialize Battery voltage pin
+    pinMode(BAT_PIN, INPUT);
+#endif
+
     // initialize serial port
     Serial.begin(115200);
     Serial.println("\r\n\r\nStarting POCSAG-ESP v" VERSION " by LY3PH...");
@@ -154,6 +159,10 @@ static int delayedParse = 0;
 String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 
+#if defined(TTGO_LORA32_V21)
+float battVoltage = 0.0;
+#endif
+
 void loop() {
     // Temporary button press interrupt reader
     if (_buttonState == LOW) {
@@ -174,6 +183,10 @@ void loop() {
             digitalWrite(LED_PIN, !digitalRead(LED_PIN));
             everySecond = 0;
 
+#if defined(TTGO_LORA32_V21)
+            // read battery voltage
+            battVoltage = (analogRead(BAT_PIN) * 2) / 1000.0;  // 2x because of voltage divider
+#endif
             // if not in main screen, show time and date
             // otherwise it is routine of main screen refresh function
             if (!_mainPageActive) {

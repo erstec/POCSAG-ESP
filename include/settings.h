@@ -63,8 +63,10 @@ https://github.com/erstec/POCSAG-ESP
 #if defined(TTGO_LORA32_V21)
 #define BUILD_VER "TTGO LORA32 V2.1"
 // TTGO Board specific definitions
-//#define BUTTON_PIN    
-#define LED_PIN       25
+#define BUTTON_PIN    KEY_BUILTIN
+#define LED_PIN       LED_BUILTIN
+
+#define BAT_PIN       35
 
 // I2C BUS
 // #define SDA_PIN       21
