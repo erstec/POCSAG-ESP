@@ -87,6 +87,7 @@ void spParseCmd(String str) {
         Serial.println("SET BAUD <baud> - set baud rate");
         Serial.println("SET ADDR <address> - set address");
         Serial.println("SET FILTER <0/1> - set address filter");
+        Serial.println("SET UTC <offset> - set UTC offset");
         Serial.println("SAVE - save settings to Flash");
         // Serial.println("GET ALL - get all settings");
         Serial.println("GET - get all settings");
