@@ -42,9 +42,9 @@ elapsedMillis mainScreenTMO;
 
 void blinkError() {
     while (true) {
-        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(LED_PIN, HIGH);
         delay(50);
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LED_PIN, LOW);
         delay(50);
 
         displayError();
@@ -60,12 +60,14 @@ void IRAM_ATTR buttonISR() {
 
 void setup() {
     // initialize built-in LED
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
 
     // initialize built-in button
+#if defined(BUTTON_PIN)
     pinMode(BUTTON_PIN, INPUT_PULLUP);
     attachInterrupt(BUTTON_PIN, buttonISR, FALLING);
+#endif
 
     // initialize serial port
     Serial.begin(115200);
@@ -169,7 +171,7 @@ void loop() {
 #endif
         // blink status LED
         if (everySecond > 1000) {
-            digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+            digitalWrite(LED_PIN, !digitalRead(LED_PIN));
             everySecond = 0;
 
             // if not in main screen, show time and date
