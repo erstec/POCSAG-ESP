@@ -36,9 +36,13 @@ void rtcSetTimeDate(int sec, int min, int hour, int day, int month, int year) {
     timeinfo.tm_mon = month - 1;
     timeinfo.tm_year = year - 1900;
     time_t t = mktime(&timeinfo);
-    t += 3600 * config.utcOffset;
-    if (rtcCheckTimeDateNeedUpdate(t)) {     
-        rtc.setTime(sec, min, hour, day, month, year);
+    // Serial.printf("[RTC] time: %s", ctime(&t));
+    t += (3600 * config.utcOffset);
+    // Serial.printf("[RTC] time with offset: %s", ctime(&t));
+    if (rtcCheckTimeDateNeedUpdate(t)) {
+        timeinfo = *localtime(&t);
+        rtc.setTimeStruct(timeinfo);
+        // rtc.setTime(sec, min, hour, day, month, year);
         rtcSet = true;
         Serial.println("[RTC] set");
     }

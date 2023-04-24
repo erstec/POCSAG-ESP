@@ -10,7 +10,7 @@ Copyright (C) 2023 Ernest LY3PH
 https://github.com/erstec/POCSAG-ESP
 */
 
-#define VERSION "0.1.5"
+#define VERSION "0.1.6"
 
 #define UTC_OFFSET 3    // offset from GMT (+3 h)
 
