@@ -33,6 +33,7 @@ namespace POCSAG_ESP_Config_Tool
             this.cbPorts = new System.Windows.Forms.ComboBox();
             this.gbSettings = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.lUTCOffset = new System.Windows.Forms.Label();
             this.lBaudrateBps = new System.Windows.Forms.Label();
             this.lFilterID = new System.Windows.Forms.Label();
             this.lBaud = new System.Windows.Forms.Label();
@@ -43,6 +44,8 @@ namespace POCSAG_ESP_Config_Tool
             this.nudCode = new System.Windows.Forms.NumericUpDown();
             this.cbBaudrate = new System.Windows.Forms.ComboBox();
             this.cbxFilterID = new System.Windows.Forms.CheckBox();
+            this.nudUTCOffset = new System.Windows.Forms.NumericUpDown();
+            this.lUTCOffsetH = new System.Windows.Forms.Label();
             this.lVersion = new System.Windows.Forms.Label();
             this.lBuild = new System.Windows.Forms.Label();
             this.bSend = new System.Windows.Forms.Button();
@@ -50,16 +53,15 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.bRestart = new System.Windows.Forms.Button();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.lUTCOffset = new System.Windows.Forms.Label();
-            this.nudUTCOffset = new System.Windows.Forms.NumericUpDown();
-            this.lUTCOffsetH = new System.Windows.Forms.Label();
+            this.lDim = new System.Windows.Forms.Label();
+            this.cbxDim = new System.Windows.Forms.CheckBox();
             this.gbSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudCode)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudUTCOffset)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudUTCOffset)).BeginInit();
             this.SuspendLayout();
             // 
             // bGet
@@ -92,7 +94,7 @@ namespace POCSAG_ESP_Config_Tool
             this.gbSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbSettings.Location = new System.Drawing.Point(3, 38);
             this.gbSettings.Name = "gbSettings";
-            this.gbSettings.Size = new System.Drawing.Size(378, 144);
+            this.gbSettings.Size = new System.Drawing.Size(378, 164);
             this.gbSettings.TabIndex = 2;
             this.gbSettings.TabStop = false;
             this.gbSettings.Text = "Settings";
@@ -105,6 +107,7 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lDim, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.lUTCOffset, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.lBaudrateBps, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.lFilterID, 0, 3);
@@ -118,17 +121,29 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel1.Controls.Add(this.cbxFilterID, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.nudUTCOffset, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.lUTCOffsetH, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.cbxDim, 1, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(372, 125);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(372, 145);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // lUTCOffset
+            // 
+            this.lUTCOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lUTCOffset.AutoSize = true;
+            this.lUTCOffset.Location = new System.Drawing.Point(3, 105);
+            this.lUTCOffset.Name = "lUTCOffset";
+            this.lUTCOffset.Size = new System.Drawing.Size(60, 13);
+            this.lUTCOffset.TabIndex = 10;
+            this.lUTCOffset.Text = "UTC Offset";
             // 
             // lBaudrateBps
             // 
@@ -233,6 +248,34 @@ namespace POCSAG_ESP_Config_Tool
             this.cbxFilterID.TabIndex = 9;
             this.cbxFilterID.UseVisualStyleBackColor = true;
             // 
+            // nudUTCOffset
+            // 
+            this.nudUTCOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.nudUTCOffset.Location = new System.Drawing.Point(69, 102);
+            this.nudUTCOffset.Maximum = new decimal(new int[] {
+            12,
+            0,
+            0,
+            0});
+            this.nudUTCOffset.Minimum = new decimal(new int[] {
+            12,
+            0,
+            0,
+            -2147483648});
+            this.nudUTCOffset.Name = "nudUTCOffset";
+            this.nudUTCOffset.Size = new System.Drawing.Size(100, 20);
+            this.nudUTCOffset.TabIndex = 11;
+            // 
+            // lUTCOffsetH
+            // 
+            this.lUTCOffsetH.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lUTCOffsetH.AutoSize = true;
+            this.lUTCOffsetH.Location = new System.Drawing.Point(175, 105);
+            this.lUTCOffsetH.Name = "lUTCOffsetH";
+            this.lUTCOffsetH.Size = new System.Drawing.Size(13, 13);
+            this.lUTCOffsetH.TabIndex = 12;
+            this.lUTCOffsetH.Text = "h";
+            // 
             // lVersion
             // 
             this.lVersion.AutoSize = true;
@@ -278,7 +321,7 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(384, 216);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(384, 234);
             this.tableLayoutPanel2.TabIndex = 6;
             // 
             // tableLayoutPanel3
@@ -324,51 +367,33 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel4.Controls.Add(this.lVersion, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.lBuild, 1, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 188);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 208);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 2;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(378, 25);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(378, 23);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
-            // lUTCOffset
+            // lDim
             // 
-            this.lUTCOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lUTCOffset.AutoSize = true;
-            this.lUTCOffset.Location = new System.Drawing.Point(3, 105);
-            this.lUTCOffset.Name = "lUTCOffset";
-            this.lUTCOffset.Size = new System.Drawing.Size(60, 13);
-            this.lUTCOffset.TabIndex = 10;
-            this.lUTCOffset.Text = "UTC Offset";
+            this.lDim.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lDim.AutoSize = true;
+            this.lDim.Location = new System.Drawing.Point(3, 128);
+            this.lDim.Name = "lDim";
+            this.lDim.Size = new System.Drawing.Size(60, 13);
+            this.lDim.TabIndex = 13;
+            this.lDim.Text = "Dim display";
             // 
-            // nudUTCOffset
+            // cbxDim
             // 
-            this.nudUTCOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.nudUTCOffset.Location = new System.Drawing.Point(69, 102);
-            this.nudUTCOffset.Maximum = new decimal(new int[] {
-            12,
-            0,
-            0,
-            0});
-            this.nudUTCOffset.Minimum = new decimal(new int[] {
-            12,
-            0,
-            0,
-            -2147483648});
-            this.nudUTCOffset.Name = "nudUTCOffset";
-            this.nudUTCOffset.Size = new System.Drawing.Size(100, 20);
-            this.nudUTCOffset.TabIndex = 11;
-            // 
-            // lUTCOffsetH
-            // 
-            this.lUTCOffsetH.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lUTCOffsetH.AutoSize = true;
-            this.lUTCOffsetH.Location = new System.Drawing.Point(175, 105);
-            this.lUTCOffsetH.Name = "lUTCOffsetH";
-            this.lUTCOffsetH.Size = new System.Drawing.Size(13, 13);
-            this.lUTCOffsetH.TabIndex = 12;
-            this.lUTCOffsetH.Text = "h";
+            this.cbxDim.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxDim.AutoSize = true;
+            this.cbxDim.Location = new System.Drawing.Point(69, 128);
+            this.cbxDim.Name = "cbxDim";
+            this.cbxDim.Size = new System.Drawing.Size(15, 14);
+            this.cbxDim.TabIndex = 14;
+            this.cbxDim.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -376,7 +401,7 @@ namespace POCSAG_ESP_Config_Tool
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(384, 216);
+            this.ClientSize = new System.Drawing.Size(384, 234);
             this.Controls.Add(this.tableLayoutPanel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MinimumSize = new System.Drawing.Size(400, 39);
@@ -388,12 +413,12 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudCode)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudUTCOffset)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudUTCOffset)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -425,6 +450,8 @@ namespace POCSAG_ESP_Config_Tool
         private System.Windows.Forms.Label lUTCOffset;
         private System.Windows.Forms.NumericUpDown nudUTCOffset;
         private System.Windows.Forms.Label lUTCOffsetH;
+        private System.Windows.Forms.Label lDim;
+        private System.Windows.Forms.CheckBox cbxDim;
     }
 }
 

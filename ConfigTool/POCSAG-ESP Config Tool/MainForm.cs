@@ -320,6 +320,10 @@ namespace POCSAG_ESP_Config_Tool
                         string utcoffset = data;
                         int utcOffsetVal = Int32.Parse(data.Trim());
                         nudUTCOffset.Value = utcOffsetVal;
+
+                        data = _serialPort.ReadLine();
+                        string dim = data;
+                        cbxDim.Checked = dim.Contains("1");
                     }
                 }
             }
@@ -354,6 +358,8 @@ namespace POCSAG_ESP_Config_Tool
             cmdToSend = "SET FILTER " + (cbxFilterID.Checked ? "1" : "0") + "\r\n";
             _serialPort.Write(cmdToSend);
             cmdToSend = "SET UTC " + nudUTCOffset.Value.ToString() + "\r\n";
+            _serialPort.Write(cmdToSend);
+            cmdToSend = "SET DIM " + (cbxDim.Checked ? "1" : "0") + "\r\n";
             _serialPort.Write(cmdToSend);
             _serialPort.Write("SAVE\r\n");
 
