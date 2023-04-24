@@ -19,6 +19,7 @@ https://github.com/erstec/POCSAG-ESP
 #include "rtc.h"
 #include "serialProtocol.h"
 #include "config.h"
+#include "led.h"
 
 #include "settings.h"
 
@@ -35,20 +36,17 @@ PagerClient pager(&radio);
 // https://github.com/jgromes/RadioShield
 // SX1278 radio = RadioShield.ModuleA;
 
+elapsedMillis every50ms;
 elapsedMillis everySecond;
 elapsedMillis every5Seconds;
+elapsedMillis every10Seconds;
 
 elapsedMillis mainScreenTMO;
 
 void blinkError() {
-    while (true) {
-        digitalWrite(LED_PIN, HIGH);
-        delay(50);
-        digitalWrite(LED_PIN, LOW);
-        delay(50);
-
-        displayError();
-    }
+    displayError();
+    ledSetPattern(LED_BLINK_ERROR);
+    ledNotifyRun();
 }
 
 static int _buttonState = HIGH;
@@ -61,7 +59,7 @@ void IRAM_ATTR buttonISR() {
 void setup() {
     // initialize built-in LED
     pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, HIGH);
+    ledSetPattern(LED_BLINK_10SEC);
 
     // initialize built-in button
 #if defined(BUTTON_PIN)
@@ -178,9 +176,13 @@ void loop() {
 #ifdef DELAYED_PARSE
     if (delayedParse == 0) {
 #endif
+        if (every50ms > 50) {
+            every50ms = 0;
+            ledNotifyRun();
+        }
+
         // blink status LED
         if (everySecond > 1000) {
-            digitalWrite(LED_PIN, !digitalRead(LED_PIN));
             everySecond = 0;
 
 #if defined(TTGO_LORA32_V21)
@@ -206,6 +208,14 @@ void loop() {
             // Serial.print(F(" dBm, AFC: "));
             // Serial.print(radio.getAFCError());
             // Serial.println(F(" Hz"));
+        }
+
+        if (every10Seconds > 10000) {
+            every10Seconds = 0;
+            // if unread messages, blink LED twice
+            if (messageGetNewCount()) {
+                ledSetPattern(LED_BLINK_TWICE);
+            }
         }
 #ifdef DELAYED_PARSE
     }

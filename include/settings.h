@@ -10,7 +10,7 @@ Copyright (C) 2023 Ernest LY3PH
 https://github.com/erstec/POCSAG-ESP
 */
 
-#define VERSION "0.1.2"
+#define VERSION "0.1.4"
 
 #define UTC_OFFSET 3    // offset from GMT (+3 h)
 
@@ -63,7 +63,7 @@ https://github.com/erstec/POCSAG-ESP
 #if defined(TTGO_LORA32_V21)
 #define BUILD_VER "TTGO LORA32 V2.1"
 // TTGO Board specific definitions
-#define BUTTON_PIN    KEY_BUILTIN
+#define BUTTON_PIN    4
 #define LED_PIN       LED_BUILTIN
 
 #define BAT_PIN       35

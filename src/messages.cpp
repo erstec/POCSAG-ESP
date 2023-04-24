@@ -15,6 +15,7 @@ https://github.com/erstec/POCSAG-ESP
 #include "screen.h"
 #include "config.h"
 #include "settings.h"
+#include "led.h"
 
 String year, month, day, hour, minute, second;
 String _time, _date;
@@ -119,6 +120,8 @@ bool messageParse(String str, uint32_t addr) {
 
                     displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
                 }
+
+                ledSetPattern(LED_BLINK_10SEC);
             }
         }
         else
@@ -133,6 +136,8 @@ bool messageParse(String str, uint32_t addr) {
                 _lastMessage.newMessage = true;
 
                 displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
+
+                ledSetPattern(LED_BLINK_10SEC);
             }
         }
 
