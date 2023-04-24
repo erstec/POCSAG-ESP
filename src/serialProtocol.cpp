@@ -59,6 +59,14 @@ void spParseCmd(String str) {
                 config.utcOffset = utc;
             }
         }
+        else if (str.startsWith("SET DIM")) {
+            bool dim = str.substring(8).toInt();
+            if (dim == 0 || dim == 1) {
+                config.dimScreen = dim;
+            } else {
+                Serial.println("Invalid dim value");
+            }
+        }
         else {
             Serial.println("Unknown subcommand");
         }
@@ -70,6 +78,7 @@ void spParseCmd(String str) {
             Serial.println(config.address);
             Serial.println(config.filterAddress);
             Serial.println(config.utcOffset);
+            Serial.println(config.dimScreen);
         // }
     }
     else if (str.startsWith("SAVE")) {
@@ -88,6 +97,7 @@ void spParseCmd(String str) {
         Serial.println("SET ADDR <address> - set address");
         Serial.println("SET FILTER <0/1> - set address filter");
         Serial.println("SET UTC <offset> - set UTC offset");
+        Serial.println("SET DIM <0/1> - set dimming mode");
         Serial.println("SAVE - save settings to Flash");
         // Serial.println("GET ALL - get all settings");
         Serial.println("GET - get all settings");

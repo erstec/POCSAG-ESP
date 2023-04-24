@@ -27,3 +27,5 @@ void displayTimeDate(bool run = true);
 void displayError();
 void displayMainPage();
 void displayMainPageRefresh();
+bool displayIsDimmed();
+void displayDim(bool dim);

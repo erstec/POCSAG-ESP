@@ -23,6 +23,8 @@ https://github.com/erstec/POCSAG-ESP
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+static bool dimmed = false;
+
 bool screenInit() {
 #if defined(ESP32DOIT_DEVKIT_V1)
     // OLED +3V3
@@ -93,9 +95,9 @@ void displayMessage(String msg, uint32_t addr, uint32_t timestamp, bool newMessa
         display.println();
     }
 
+    displayDim(false);
+    
     display.display();
-
-    // display.dim(false);
 }
 
 #if defined(TTGO_LORA32_V21)
@@ -164,10 +166,18 @@ void displayMainPage() {
     }
 
     display.display();
-    
-    // display.dim(true);
 }
 
 void displayMainPageRefresh() {
     lastMainData.needRefresh = true;
+}
+
+bool displayIsDimmed() {
+    return dimmed;
+}
+
+void displayDim(bool dim) {
+    if (dimmed == dim) return;
+    dimmed = dim;
+    display.dim(dim);
 }

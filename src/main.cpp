@@ -148,6 +148,7 @@ void printTime() {
 }
 
 static bool _mainPageActive = false;
+static bool _mainPageNeedToDim = false;
 
 #ifdef DELAYED_PARSE
 #define DELAYED_PARSE_DELAY (100000 * 5)
@@ -168,6 +169,14 @@ void loop() {
     // Temporary button press interrupt reader
     if (_buttonState == LOW) {
         Serial.println(F("[GPIO] Button pressed"));
+
+        // press button if display is dimmed, wake it up and do nothing else
+        if (displayIsDimmed()) {
+            displayDim(false);
+            return;
+        }
+
+        // if not dimmed, display last message
         messageLastDisplay();
         mainScreenTMO = 0;
         displayMainPageRefresh();
@@ -175,6 +184,7 @@ void loop() {
     } 
     
     _mainPageActive = (mainScreenTMO > MAIN_PAGE_TMO) ? true : false;
+    _mainPageNeedToDim = (mainScreenTMO > (MAIN_PAGE_TMO * 2)) ? true : false;
 
 #ifdef DELAYED_PARSE
     if (delayedParse == 0) {
@@ -200,6 +210,11 @@ void loop() {
             } else {
                 // mainScreenTMO = 0; // reset after arrived Message shown on OLED
                 displayMainPage();
+            }
+
+            if (_mainPageNeedToDim && config.dimScreen) {
+                Serial.println(F("[OLED] Dimming screen"));
+                displayDim(true);
             }
         }
 

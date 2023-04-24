@@ -47,6 +47,7 @@ void configLoad() {
                 config.address = json["address"];
                 config.filterAddress = json["filterAddress"];
                 config.utcOffset = json["utcOffset"];
+                config.dimScreen = json["dimScreen"];
 
                 configLoaded = true;
             } else {
@@ -69,6 +70,8 @@ void configLoad() {
 #endif
         config.utcOffset = UTC_OFFSET;
 
+        config.dimScreen = false;
+
         // Create default config file
         configSave();
     }
@@ -83,6 +86,7 @@ void configSave() {
     json["address"] = config.address;
     json["filterAddress"] = config.filterAddress;
     json["utcOffset"] = config.utcOffset;
+    json["dimScreen"] = config.dimScreen;
 
     File configFile = SPIFFS.open("/config.json", "w");
     if (!configFile) {

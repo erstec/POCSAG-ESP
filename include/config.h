@@ -18,6 +18,7 @@ typedef struct {
     uint32_t address;
     bool filterAddress;
     uint8_t utcOffset;
+    bool dimScreen;
 } Config_ts;
 
 extern Config_ts config;
