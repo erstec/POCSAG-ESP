@@ -33,6 +33,7 @@ namespace POCSAG_ESP_Config_Tool
             this.cbPorts = new System.Windows.Forms.ComboBox();
             this.gbSettings = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.lDim = new System.Windows.Forms.Label();
             this.lUTCOffset = new System.Windows.Forms.Label();
             this.lBaudrateBps = new System.Windows.Forms.Label();
             this.lFilterID = new System.Windows.Forms.Label();
@@ -46,6 +47,7 @@ namespace POCSAG_ESP_Config_Tool
             this.cbxFilterID = new System.Windows.Forms.CheckBox();
             this.nudUTCOffset = new System.Windows.Forms.NumericUpDown();
             this.lUTCOffsetH = new System.Windows.Forms.Label();
+            this.cbxDim = new System.Windows.Forms.CheckBox();
             this.lVersion = new System.Windows.Forms.Label();
             this.lBuild = new System.Windows.Forms.Label();
             this.bSend = new System.Windows.Forms.Button();
@@ -53,8 +55,6 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.bRestart = new System.Windows.Forms.Button();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.lDim = new System.Windows.Forms.Label();
-            this.cbxDim = new System.Windows.Forms.CheckBox();
             this.gbSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudCode)).BeginInit();
@@ -134,6 +134,16 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(372, 145);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // lDim
+            // 
+            this.lDim.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lDim.AutoSize = true;
+            this.lDim.Location = new System.Drawing.Point(3, 128);
+            this.lDim.Name = "lDim";
+            this.lDim.Size = new System.Drawing.Size(60, 13);
+            this.lDim.TabIndex = 13;
+            this.lDim.Text = "Dim display";
             // 
             // lUTCOffset
             // 
@@ -276,6 +286,16 @@ namespace POCSAG_ESP_Config_Tool
             this.lUTCOffsetH.TabIndex = 12;
             this.lUTCOffsetH.Text = "h";
             // 
+            // cbxDim
+            // 
+            this.cbxDim.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cbxDim.AutoSize = true;
+            this.cbxDim.Location = new System.Drawing.Point(69, 128);
+            this.cbxDim.Name = "cbxDim";
+            this.cbxDim.Size = new System.Drawing.Size(15, 14);
+            this.cbxDim.TabIndex = 14;
+            this.cbxDim.UseVisualStyleBackColor = true;
+            // 
             // lVersion
             // 
             this.lVersion.AutoSize = true;
@@ -374,26 +394,6 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(378, 23);
             this.tableLayoutPanel4.TabIndex = 1;
-            // 
-            // lDim
-            // 
-            this.lDim.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lDim.AutoSize = true;
-            this.lDim.Location = new System.Drawing.Point(3, 128);
-            this.lDim.Name = "lDim";
-            this.lDim.Size = new System.Drawing.Size(60, 13);
-            this.lDim.TabIndex = 13;
-            this.lDim.Text = "Dim display";
-            // 
-            // cbxDim
-            // 
-            this.cbxDim.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.cbxDim.AutoSize = true;
-            this.cbxDim.Location = new System.Drawing.Point(69, 128);
-            this.cbxDim.Name = "cbxDim";
-            this.cbxDim.Size = new System.Drawing.Size(15, 14);
-            this.cbxDim.TabIndex = 14;
-            this.cbxDim.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
