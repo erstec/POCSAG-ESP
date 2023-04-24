@@ -48,14 +48,18 @@ namespace POCSAG_ESP_Config_Tool
             this.bSend = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.bRestart = new System.Windows.Forms.Button();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.lUTCOffset = new System.Windows.Forms.Label();
+            this.nudUTCOffset = new System.Windows.Forms.NumericUpDown();
+            this.lUTCOffsetH = new System.Windows.Forms.Label();
             this.gbSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudCode)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudUTCOffset)).BeginInit();
             this.SuspendLayout();
             // 
             // bGet
@@ -88,7 +92,7 @@ namespace POCSAG_ESP_Config_Tool
             this.gbSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbSettings.Location = new System.Drawing.Point(3, 38);
             this.gbSettings.Name = "gbSettings";
-            this.gbSettings.Size = new System.Drawing.Size(378, 118);
+            this.gbSettings.Size = new System.Drawing.Size(378, 144);
             this.gbSettings.TabIndex = 2;
             this.gbSettings.TabStop = false;
             this.gbSettings.Text = "Settings";
@@ -101,6 +105,7 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lUTCOffset, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.lBaudrateBps, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.lFilterID, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.lBaud, 0, 1);
@@ -111,22 +116,25 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel1.Controls.Add(this.nudCode, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.cbBaudrate, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.cbxFilterID, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.nudUTCOffset, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lUTCOffsetH, 2, 4);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(372, 99);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(372, 125);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // lBaudrateBps
             // 
             this.lBaudrateBps.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lBaudrateBps.AutoSize = true;
-            this.lBaudrateBps.Location = new System.Drawing.Point(172, 33);
+            this.lBaudrateBps.Location = new System.Drawing.Point(175, 33);
             this.lBaudrateBps.Name = "lBaudrateBps";
             this.lBaudrateBps.Size = new System.Drawing.Size(24, 13);
             this.lBaudrateBps.TabIndex = 8;
@@ -165,7 +173,7 @@ namespace POCSAG_ESP_Config_Tool
             // tbFreq
             // 
             this.tbFreq.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.tbFreq.Location = new System.Drawing.Point(66, 3);
+            this.tbFreq.Location = new System.Drawing.Point(69, 3);
             this.tbFreq.Name = "tbFreq";
             this.tbFreq.Size = new System.Drawing.Size(100, 20);
             this.tbFreq.TabIndex = 1;
@@ -174,7 +182,7 @@ namespace POCSAG_ESP_Config_Tool
             // 
             this.lFreqMHz.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lFreqMHz.AutoSize = true;
-            this.lFreqMHz.Location = new System.Drawing.Point(172, 6);
+            this.lFreqMHz.Location = new System.Drawing.Point(175, 6);
             this.lFreqMHz.Name = "lFreqMHz";
             this.lFreqMHz.Size = new System.Drawing.Size(29, 13);
             this.lFreqMHz.TabIndex = 2;
@@ -193,7 +201,7 @@ namespace POCSAG_ESP_Config_Tool
             // nudCode
             // 
             this.nudCode.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.nudCode.Location = new System.Drawing.Point(66, 56);
+            this.nudCode.Location = new System.Drawing.Point(69, 56);
             this.nudCode.Maximum = new decimal(new int[] {
             2000000,
             0,
@@ -210,7 +218,7 @@ namespace POCSAG_ESP_Config_Tool
             this.cbBaudrate.FormattingEnabled = true;
             this.cbBaudrate.Items.AddRange(new object[] {
             "1200"});
-            this.cbBaudrate.Location = new System.Drawing.Point(66, 29);
+            this.cbBaudrate.Location = new System.Drawing.Point(69, 29);
             this.cbBaudrate.Name = "cbBaudrate";
             this.cbBaudrate.Size = new System.Drawing.Size(100, 21);
             this.cbBaudrate.TabIndex = 7;
@@ -219,7 +227,7 @@ namespace POCSAG_ESP_Config_Tool
             // 
             this.cbxFilterID.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.cbxFilterID.AutoSize = true;
-            this.cbxFilterID.Location = new System.Drawing.Point(66, 82);
+            this.cbxFilterID.Location = new System.Drawing.Point(69, 82);
             this.cbxFilterID.Name = "cbxFilterID";
             this.cbxFilterID.Size = new System.Drawing.Size(15, 14);
             this.cbxFilterID.TabIndex = 9;
@@ -270,7 +278,7 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(384, 204);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(384, 216);
             this.tableLayoutPanel2.TabIndex = 6;
             // 
             // tableLayoutPanel3
@@ -281,7 +289,7 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 89F));
             this.tableLayoutPanel3.Controls.Add(this.bRestart, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.cbPorts, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.bSend, 2, 0);
@@ -293,24 +301,6 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.Size = new System.Drawing.Size(378, 29);
             this.tableLayoutPanel3.TabIndex = 0;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.AutoSize = true;
-            this.tableLayoutPanel4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lVersion, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lBuild, 1, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 162);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(378, 39);
-            this.tableLayoutPanel4.TabIndex = 1;
             // 
             // bRestart
             // 
@@ -324,16 +314,72 @@ namespace POCSAG_ESP_Config_Tool
             this.bRestart.UseVisualStyleBackColor = false;
             this.bRestart.Click += new System.EventHandler(this.bRestart_Click);
             // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.AutoSize = true;
+            this.tableLayoutPanel4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.Controls.Add(this.lVersion, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lBuild, 1, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 188);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(378, 25);
+            this.tableLayoutPanel4.TabIndex = 1;
+            // 
+            // lUTCOffset
+            // 
+            this.lUTCOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lUTCOffset.AutoSize = true;
+            this.lUTCOffset.Location = new System.Drawing.Point(3, 105);
+            this.lUTCOffset.Name = "lUTCOffset";
+            this.lUTCOffset.Size = new System.Drawing.Size(60, 13);
+            this.lUTCOffset.TabIndex = 10;
+            this.lUTCOffset.Text = "UTC Offset";
+            // 
+            // nudUTCOffset
+            // 
+            this.nudUTCOffset.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.nudUTCOffset.Location = new System.Drawing.Point(69, 102);
+            this.nudUTCOffset.Maximum = new decimal(new int[] {
+            12,
+            0,
+            0,
+            0});
+            this.nudUTCOffset.Minimum = new decimal(new int[] {
+            12,
+            0,
+            0,
+            -2147483648});
+            this.nudUTCOffset.Name = "nudUTCOffset";
+            this.nudUTCOffset.Size = new System.Drawing.Size(100, 20);
+            this.nudUTCOffset.TabIndex = 11;
+            // 
+            // lUTCOffsetH
+            // 
+            this.lUTCOffsetH.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lUTCOffsetH.AutoSize = true;
+            this.lUTCOffsetH.Location = new System.Drawing.Point(175, 105);
+            this.lUTCOffsetH.Name = "lUTCOffsetH";
+            this.lUTCOffsetH.Size = new System.Drawing.Size(13, 13);
+            this.lUTCOffsetH.TabIndex = 12;
+            this.lUTCOffsetH.Text = "h";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(384, 204);
+            this.ClientSize = new System.Drawing.Size(384, 216);
             this.Controls.Add(this.tableLayoutPanel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MinimumSize = new System.Drawing.Size(400, 0);
+            this.MinimumSize = new System.Drawing.Size(400, 39);
             this.Name = "MainForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -347,6 +393,7 @@ namespace POCSAG_ESP_Config_Tool
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudUTCOffset)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -375,6 +422,9 @@ namespace POCSAG_ESP_Config_Tool
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Button bRestart;
+        private System.Windows.Forms.Label lUTCOffset;
+        private System.Windows.Forms.NumericUpDown nudUTCOffset;
+        private System.Windows.Forms.Label lUTCOffsetH;
     }
 }
 

@@ -313,9 +313,13 @@ namespace POCSAG_ESP_Config_Tool
 
                         data = _serialPort.ReadLine();
                         string filter = data;
-                        cbxFilterID.Checked = filter.Equals("1");
+                        cbxFilterID.Checked = filter.Contains("1");
                         //BeginInvoke(new SetTextDelegate(si_DataReceived), new object[] { cbxFilterID, "cbx", filter });
 
+                        data = _serialPort.ReadLine();
+                        string utcoffset = data;
+                        int utcOffsetVal = Int32.Parse(data.Trim());
+                        nudUTCOffset.Value = utcOffsetVal;
                     }
                 }
             }
@@ -336,6 +340,24 @@ namespace POCSAG_ESP_Config_Tool
                 MessageBox.Show("Wrong FW and Config Tool versions!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            string cmdToSend = "";
+
+            portOpen();
+
+            cmdToSend = "SET FREQ " + tbFreq.Text + "\n";
+            _serialPort.Write(cmdToSend);
+            cmdToSend = "SET BAUD " + cbBaudrate.Text + "\r\n";
+            _serialPort.Write(cmdToSend);
+            cmdToSend = "SET ADDR " + nudCode.Value.ToString() + "\r\n";
+            _serialPort.Write(cmdToSend);
+            cmdToSend = "SET FILTER " + (cbxFilterID.Checked ? "1" : "0") + "\r\n";
+            _serialPort.Write(cmdToSend);
+            cmdToSend = "SET UTC " + nudUTCOffset.Value.ToString() + "\r\n";
+            _serialPort.Write(cmdToSend);
+            _serialPort.Write("SAVE\r\n");
+
+            portClose();
         }
 
         private void bRestart_Click(object sender, EventArgs e)
