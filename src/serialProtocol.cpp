@@ -52,8 +52,8 @@ void spParseCmd(String str) {
             }
         }
         else if (str.startsWith("SET UTC")) {
-            uint8_t utc = str.substring(8).toInt();
-            if (utc > 12) {
+            int8_t utc = str.substring(8).toInt();
+            if (utc > 12 || utc < -12) {
                 Serial.println("Invalid UTC offset");
             } else {
                 config.utcOffset = utc;

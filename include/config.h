@@ -17,7 +17,7 @@ typedef struct {
     uint16_t baud;
     uint32_t address;
     bool filterAddress;
-    uint8_t utcOffset;
+    int8_t utcOffset;
     bool dimScreen;
 } Config_ts;
 

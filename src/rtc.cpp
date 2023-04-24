@@ -13,10 +13,11 @@ https://github.com/erstec/POCSAG-ESP
 #include "main.h"
 #include "rtc.h"
 #include "settings.h"
+#include "config.h"
 
 static bool rtcSet = false;
 
-ESP32Time rtc(3600 * UTC_OFFSET);
+ESP32Time rtc(0);
 
 String rtcGetTimeStr() {
     return rtc.getTime("%Y-%m-%d %H:%M:%S");
@@ -35,7 +36,7 @@ void rtcSetTimeDate(int sec, int min, int hour, int day, int month, int year) {
     timeinfo.tm_mon = month - 1;
     timeinfo.tm_year = year - 1900;
     time_t t = mktime(&timeinfo);
-    t += 3600 * UTC_OFFSET;
+    t += 3600 * config.utcOffset;
     if (rtcCheckTimeDateNeedUpdate(t)) {     
         rtc.setTime(sec, min, hour, day, month, year);
         rtcSet = true;
