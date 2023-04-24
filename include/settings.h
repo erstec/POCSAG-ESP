@@ -10,7 +10,7 @@ Copyright (C) 2023 Ernest LY3PH
 https://github.com/erstec/POCSAG-ESP
 */
 
-#define VERSION "0.1.1"
+#define VERSION "0.1.4"
 
 #define UTC_OFFSET 3    // offset from GMT (+3 h)
 
@@ -39,7 +39,7 @@ https://github.com/erstec/POCSAG-ESP
 // Board specific definitions
 // Button and LED (built-in)
 #define BUTTON_PIN    0
-// #define LED_PIN       2
+#define LED_PIN       LED_BUILTIN
 // I2C BUS
 // #define SDA_PIN       21
 // #define SCL_PIN       22
@@ -62,14 +62,28 @@ https://github.com/erstec/POCSAG-ESP
 
 #if defined(TTGO_LORA32_V21)
 #define BUILD_VER "TTGO LORA32 V2.1"
-// // TTGO Board specific definitions
-// #define HPDIO1 33
-// #define HPDIO2 32
+// TTGO Board specific definitions
+#define BUTTON_PIN    4
+#define LED_PIN       LED_BUILTIN
 
-// // SX1278 definitions
-// #define SX1278_NSS    18
-// #define SX1278_DIO0   26
-// #define SX1278_RESET  23
-// #define SX1278_DIO1   HPDIO1
-// #define SX1278_DIO2   HPDIO2
+#define BAT_PIN       35
+
+// I2C BUS
+// #define SDA_PIN       21
+// #define SCL_PIN       22
+// SPI BUS
+// #define MISO_PIN      19
+// #define MOSI_PIN      23
+// #define SCK_PIN       18
+// #define SS_PIN        5
+
+#define HPDIO1 33
+#define HPDIO2 32
+
+// SX1278 definitions
+#define SX1278_NSS    18
+#define SX1278_DIO0   26
+#define SX1278_RESET  23
+#define SX1278_DIO1   HPDIO1
+#define SX1278_DIO2   HPDIO2
 #endif

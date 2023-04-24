@@ -25,3 +25,4 @@ bool messageParse(String str, uint32_t addr);
 uint16_t messageGetAllCount();
 uint16_t messageGetNewCount();
 void messageLastDisplay();
+uint32_t messageGetTotalParsed();

@@ -23,11 +23,14 @@ https://github.com/erstec/POCSAG-ESP
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+static bool dimmed = false;
+
 bool screenInit() {
 #if defined(ESP32DOIT_DEVKIT_V1)
     // OLED +3V3
     pinMode(OLED_POWER_PIN, OUTPUT);
     digitalWrite(OLED_POWER_PIN, HIGH);
+    delay(250);
 #endif
 
     // initialize I2C
@@ -92,10 +95,14 @@ void displayMessage(String msg, uint32_t addr, uint32_t timestamp, bool newMessa
         display.println();
     }
 
+    displayDim(false);
+    
     display.display();
-
-    // display.dim(false);
 }
+
+#if defined(TTGO_LORA32_V21)
+extern float battVoltage;
+#endif
 
 void displayTimeDate(bool run) {
     display.setCursor(1, 1);
@@ -103,6 +110,13 @@ void displayTimeDate(bool run) {
     display.fillRect(0, 0, display.width(), 9, WHITE);
     display.setTextColor(BLACK, WHITE);
     display.println(rtcGetTimeDateStr());
+
+#if defined(TTGO_LORA32_V21)
+    display.setCursor(display.width() - (6 * 4), (8 * 7) + 1);
+    display.setTextColor(WHITE, BLACK);
+    display.printf("%.1f", battVoltage);
+#endif
+
     if (run) display.display();
 }
 
@@ -152,10 +166,18 @@ void displayMainPage() {
     }
 
     display.display();
-    
-    // display.dim(true);
 }
 
 void displayMainPageRefresh() {
     lastMainData.needRefresh = true;
+}
+
+bool displayIsDimmed() {
+    return dimmed;
+}
+
+void displayDim(bool dim) {
+    if (dimmed == dim) return;
+    dimmed = dim;
+    display.dim(dim);
 }

@@ -19,6 +19,7 @@ https://github.com/erstec/POCSAG-ESP
 #include "rtc.h"
 #include "serialProtocol.h"
 #include "config.h"
+#include "led.h"
 
 #include "settings.h"
 
@@ -35,20 +36,17 @@ PagerClient pager(&radio);
 // https://github.com/jgromes/RadioShield
 // SX1278 radio = RadioShield.ModuleA;
 
+elapsedMillis every50ms;
 elapsedMillis everySecond;
 elapsedMillis every5Seconds;
+elapsedMillis every10Seconds;
 
 elapsedMillis mainScreenTMO;
 
 void blinkError() {
-    while (true) {
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(50);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(50);
-
-        displayError();
-    }
+    displayError();
+    ledSetPattern(LED_BLINK_ERROR);
+    ledNotifyRun();
 }
 
 static int _buttonState = HIGH;
@@ -60,12 +58,22 @@ void IRAM_ATTR buttonISR() {
 
 void setup() {
     // initialize built-in LED
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
+    pinMode(LED_PIN, OUTPUT);
+    ledSetPattern(LED_BLINK_10SEC);
 
     // initialize built-in button
+#if defined(BUTTON_PIN)
     pinMode(BUTTON_PIN, INPUT_PULLUP);
     attachInterrupt(BUTTON_PIN, buttonISR, FALLING);
+#endif
+
+#if defined(TTGO_LORA32_V21)
+    // initialize Battery voltage pin
+    pinMode(BAT_PIN, INPUT);
+#endif
+
+    // https://randomnerdtutorials.com/esp32-adc-analog-read-arduino-ide/
+    // analogSetClockDiv(attenuation)
 
     // initialize serial port
     Serial.begin(115200);
@@ -73,7 +81,12 @@ void setup() {
     Serial.println(BUILD_VER);
 
     if (!screenInit()) {
-        Serial.println(F("Failed to initialize screen!"));
+        Serial.println(F("[OLED] Failed to initialize screen!"));
+        blinkError();
+    }
+
+    if (!configInit()) {
+        Serial.println(F("[CFG] Failed to initialize config!"));
         blinkError();
     }
 
@@ -82,31 +95,33 @@ void setup() {
     // initialize SX1278 with default settings
     Serial.print(F("[SX1278] Initializing... "));
     int state = radio.beginFSK();
+    // radio.setAFC(true);
+    // radio.setGain(0); // 1-6, 0 - auto
 
     // when using one of the non-LoRa modules
     // (RF69, CC1101, Si4432 etc.), use the basic begin() method
     // int state = radio.begin();
 
     if (state == RADIOLIB_ERR_NONE) {
-        Serial.println(F("success!"));
+        Serial.println(F("ok"));
         displayStatus(STATUS_SX);
     } else {
-        Serial.print(F("failed, code "));
+        Serial.print(F("fail, code "));
         Serial.print(state);
         Serial.println(". Halting.");
         blinkError();
     }
 
     // initialize Pager client
-    Serial.printf("%.6f\r\n", config.freq);
+    Serial.printf("[Pager] Freq: %.6f\r\n", config.freq);
     Serial.print(F("[Pager] Initializing... "));
 
     state = pager.begin(config.freq, config.baud);
     if (state == RADIOLIB_ERR_NONE) {
-        Serial.println(F("success!"));
+        Serial.println(F("ok"));
         displayStatus(STATUS_PAGER);
     } else {
-        Serial.print(F("failed, code "));
+        Serial.print(F("fail, code "));
         Serial.print(state);
         Serial.println(". Halting.");
         blinkError();
@@ -116,10 +131,10 @@ void setup() {
     Serial.print(F("[Pager] Starting to listen... "));
     state = pager.startReceive(pin, config.address, 0U); // no address filtering default 0xFFFFF - filtered to exact address only)
     if (state == RADIOLIB_ERR_NONE) {
-        Serial.println(F("success!"));
+        Serial.println(F("ok"));
         displayStatus(STATUS_LISTENING);
     } else {
-        Serial.print(F("failed, code "));
+        Serial.print(F("fail, code "));
         Serial.print(state);
         Serial.println(F(". Halting."));
         blinkError();
@@ -133,6 +148,7 @@ void printTime() {
 }
 
 static bool _mainPageActive = false;
+static bool _mainPageNeedToDim = false;
 
 #ifdef DELAYED_PARSE
 #define DELAYED_PARSE_DELAY (100000 * 5)
@@ -145,10 +161,22 @@ static int delayedParse = 0;
 String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 
+#if defined(TTGO_LORA32_V21)
+float battVoltage = 0.0;
+#endif
+
 void loop() {
     // Temporary button press interrupt reader
     if (_buttonState == LOW) {
-        Serial.println(F("Button pressed!"));
+        Serial.println(F("[GPIO] Button pressed"));
+
+        // press button if display is dimmed, wake it up and do nothing else
+        if (displayIsDimmed()) {
+            displayDim(false);
+            return;
+        }
+
+        // if not dimmed, display last message
         messageLastDisplay();
         mainScreenTMO = 0;
         displayMainPageRefresh();
@@ -156,15 +184,25 @@ void loop() {
     } 
     
     _mainPageActive = (mainScreenTMO > MAIN_PAGE_TMO) ? true : false;
+    _mainPageNeedToDim = (mainScreenTMO > (MAIN_PAGE_TMO * 2)) ? true : false;
 
 #ifdef DELAYED_PARSE
     if (delayedParse == 0) {
 #endif
+        if (every50ms > 50) {
+            every50ms = 0;
+            ledNotifyRun();
+        }
+
         // blink status LED
         if (everySecond > 1000) {
-            digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
             everySecond = 0;
 
+#if defined(TTGO_LORA32_V21)
+            // https://iotips.tech/esp32-analog-input-linearity/
+            // read battery voltage
+            battVoltage = ((analogRead(BAT_PIN) * 2) - 550) / 1000.0;  // 2x because of voltage divider, 550 - empyrical value
+#endif
             // if not in main screen, show time and date
             // otherwise it is routine of main screen refresh function
             if (!_mainPageActive) {
@@ -172,6 +210,11 @@ void loop() {
             } else {
                 // mainScreenTMO = 0; // reset after arrived Message shown on OLED
                 displayMainPage();
+            }
+
+            if (_mainPageNeedToDim && config.dimScreen) {
+                Serial.println(F("[OLED] Dimming screen"));
+                displayDim(true);
             }
         }
 
@@ -184,6 +227,14 @@ void loop() {
             // Serial.print(F(" dBm, AFC: "));
             // Serial.print(radio.getAFCError());
             // Serial.println(F(" Hz"));
+        }
+
+        if (every10Seconds > 10000) {
+            every10Seconds = 0;
+            // if unread messages, blink LED twice
+            if (messageGetNewCount()) {
+                ledSetPattern(LED_BLINK_TWICE);
+            }
         }
 #ifdef DELAYED_PARSE
     }
@@ -226,6 +277,7 @@ void loop() {
             msgIdx--;
 
             Serial.printf("Showing message %d\r\n", msgIdx + 1);
+            Serial.println(F("<SOM>"));
             Serial.println("Data: " + _messages[msgIdx].message);
             Serial.println("Address: " + String(_messages[msgIdx].address));
 
@@ -233,6 +285,7 @@ void loop() {
                 mainScreenTMO = 0;
                 displayMainPageRefresh();
             }
+            Serial.println(F("<EOM>"));
         }
     }
 #else
@@ -240,8 +293,8 @@ void loop() {
     // while (pager.available() >= MSG_BATCH_SIZE) {
     if (pager.available() >= MSG_BATCH_SIZE) {
         Serial.println();
-        printTime();
-        Serial.print(F("[Pager] Received pager data, decoding... "));
+        // printTime();
+        Serial.print(F("[Pager] Data decoding... "));
 
         // you can read the data as an Arduino String
         String str;
@@ -257,23 +310,28 @@ void loop() {
         */
 
         if (state == RADIOLIB_ERR_NONE) {
-            Serial.println(F("success!"));
+            Serial.println(F("ok"));
 
             // print the received data
+            Serial.println("<SOM>");
+            Serial.print(F("ID:\t"));
+            Serial.println(messageGetTotalParsed());
+            Serial.print(F("TS:\t"));
+            Serial.println(rtcGetTimeStr());
             Serial.print(F("Data:\t"));
             Serial.println(str);
             Serial.print(F("Len:\t"));
             Serial.println(str.length());
             Serial.print(F("Addr:\t"));
             Serial.println(messageFormatID(addr));
-
             if (messageParse(str, addr)) {
                 mainScreenTMO = 0;
                 displayMainPageRefresh();
             }
+            Serial.println("<EOM>");
         } else {
             // some error occurred
-            Serial.print(F("failed, code "));
+            Serial.print(F("fail, code "));
             Serial.print(state);
             if (state == RADIOLIB_ERR_ADDRESS_NOT_FOUND) {
                 Serial.print(F(". Address not found"));

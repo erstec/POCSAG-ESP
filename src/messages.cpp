@@ -15,9 +15,12 @@ https://github.com/erstec/POCSAG-ESP
 #include "screen.h"
 #include "config.h"
 #include "settings.h"
+#include "led.h"
 
 String year, month, day, hour, minute, second;
 String _time, _date;
+
+static uint32_t _totalMessagesParsed = 0;
 
 static uint16_t _allMessages = 0;
 static uint16_t _newMessages = 0;
@@ -48,6 +51,11 @@ static bool messageValid(String msg, uint32_t addr) {
 }
 
 bool messageParse(String str, uint32_t addr) {
+    
+    _totalMessagesParsed++;
+
+    Serial.print(F("Type:\t"));
+
     if (addr == 216) { // 0000216 - Time announcement in UTC
         if (str.startsWith("YYYYMMDDHHMMSS")) {
             // parse the message
@@ -62,11 +70,12 @@ bool messageParse(String str, uint32_t addr) {
             _date = day + "." + month + "." + year;
             _time = hour + ":" + minute + ":" + second;
 
-            Serial.println("Time received [" + _date + " " + _time + "]");
+            Serial.println(F("Time"));
+            Serial.println("[T] " + _date + " " + _time);
             rtcSetTimeDate(second.toInt(), minute.toInt(), hour.toInt(), day.toInt(), month.toInt(), year.toInt() + 2000);
         }
     }
-    else if (addr == 4520) {
+    else if (addr == 4520 || addr == 4512) {
         Serial.println("Skyper message");
     }
     else if (addr == 8) {
@@ -76,7 +85,7 @@ bool messageParse(String str, uint32_t addr) {
         Serial.println("Skyper OTA Time");
     }
     else if (addr == 208 || addr == 224) {
-        Serial.println("German time announcement");
+        Serial.println("CET Time announcement");
     }
     else if (addr == 200) {
         if (str.startsWith("XTIME=")) {
@@ -90,11 +99,13 @@ bool messageParse(String str, uint32_t addr) {
             _time = hour + ":" + minute + ":" + second;
             _date = day + "." + month + "." + year;
 
-            Serial.println("Time received [" + _date + " " + _time + "]");
+            Serial.println(F("Time"));
+            Serial.println("[T] " + _date + " " + _time);
             rtcSetTimeDate(second.toInt(), minute.toInt(), hour.toInt(), day.toInt(), month.toInt(), year.toInt() + 2000);
         }
     } else {
-        Serial.println("Unknown address: " + messageFormatID(addr));
+        Serial.println(F("Message"));
+        Serial.printf("Match:\t%s - %s\r\n", (addr == config.address) ? "YES" : "NO", messageFormatID(addr));
 
         if (config.filterAddress) {
             if (addr == config.address) {
@@ -109,6 +120,8 @@ bool messageParse(String str, uint32_t addr) {
 
                     displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
                 }
+
+                ledSetPattern(LED_BLINK_10SEC);
             }
         }
         else
@@ -123,6 +136,8 @@ bool messageParse(String str, uint32_t addr) {
                 _lastMessage.newMessage = true;
 
                 displayMessage(_lastMessage.message, _lastMessage.address, _lastMessage.timestamp, _lastMessage.newMessage);
+
+                ledSetPattern(LED_BLINK_10SEC);
             }
         }
 
@@ -147,4 +162,8 @@ uint16_t messageGetAllCount() {
 
 uint16_t messageGetNewCount() {
     return _newMessages;
+}
+
+uint32_t messageGetTotalParsed() {
+    return _totalMessagesParsed;
 }

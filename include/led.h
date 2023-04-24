@@ -12,17 +12,13 @@ https://github.com/erstec/POCSAG-ESP
 
 #include <Arduino.h>
 
-typedef struct {
-    double freq;
-    uint16_t baud;
-    uint32_t address;
-    bool filterAddress;
-    uint8_t utcOffset;
-    bool dimScreen;
-} Config_ts;
+typedef enum {
+    LED_OFF,
+    LED_ON,
+    LED_BLINK_TWICE,
+    LED_BLINK_10SEC,
+    LED_BLINK_ERROR,
+} LedState_te;
 
-extern Config_ts config;
-
-bool configInit();
-void configLoad();
-void configSave();
+void ledSetPattern(LedState_te state);
+void ledNotifyRun();
