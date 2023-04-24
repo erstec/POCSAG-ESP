@@ -72,6 +72,9 @@ void setup() {
     pinMode(BAT_PIN, INPUT);
 #endif
 
+    // https://randomnerdtutorials.com/esp32-adc-analog-read-arduino-ide/
+    // analogSetClockDiv(attenuation)
+
     // initialize serial port
     Serial.begin(115200);
     Serial.println("\r\n\r\nStarting POCSAG-ESP v" VERSION " by LY3PH...");
@@ -186,8 +189,9 @@ void loop() {
             everySecond = 0;
 
 #if defined(TTGO_LORA32_V21)
+            // https://iotips.tech/esp32-analog-input-linearity/
             // read battery voltage
-            battVoltage = (analogRead(BAT_PIN) * 2) / 1000.0;  // 2x because of voltage divider
+            battVoltage = ((analogRead(BAT_PIN) * 2) - 550) / 1000.0;  // 2x because of voltage divider, 550 - empyrical value
 #endif
             // if not in main screen, show time and date
             // otherwise it is routine of main screen refresh function
