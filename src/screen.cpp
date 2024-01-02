@@ -54,6 +54,7 @@ bool screenInit() {
 }
 
 void displayStatus(periph_status_t status) {
+    if (dimmed) return;
     switch (status) {
         case STATUS_SX:
             display.println("SX1278 OK!");
@@ -105,6 +106,7 @@ extern float battVoltage;
 #endif
 
 void displayTimeDate(bool run) {
+    if (dimmed) return;
     display.setCursor(1, 1);
     //display.drawRect(0, 0, display.width(), 8, WHITE);
     display.fillRect(0, 0, display.width(), 9, WHITE);
@@ -121,6 +123,7 @@ void displayTimeDate(bool run) {
 }
 
 void displayError() {
+    if (dimmed) displayDim(false);
     display.println("Error!");
     display.display();
 }
@@ -132,6 +135,8 @@ static struct {
 } lastMainData;
 
 void displayMainPage() {
+    if (dimmed) return;
+    
     uint16_t msgsCnt = messageGetAllCount();
     uint16_t newMsgsCnt = messageGetNewCount();
 
